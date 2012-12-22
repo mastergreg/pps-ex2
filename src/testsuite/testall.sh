@@ -7,8 +7,9 @@ diffpath=../diffpy/diff.py
 #diffpath=echo
 serialpath=../serial/main.exec
 testFilesSizes=(10 100 1000)
-cilkTestFolders=(../cilk/)
-cilkplusTestFolders=(../cilkplus/)
+cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec)
+#cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
+cilkplusTestFiles=()
 NTHREADS=4
 for i in ${testfilesSizes[@]}
 do
@@ -33,46 +34,36 @@ do
 done
 
 
-# Parallel execution using MPI
+# Parallel execution using Cilk
 echo "============ Cilk EXECUTION =============="
-for j in ${MPItestfolders[@]}
+for j in ${cilkTestFiles}
 do
     echo $j
-    echo "Point-To-Point runs"
     for i in ${testfiles[@]}
     do
         echo "Running testfile:" ${i}
         out="${j//\.\.\//}"
-        outfile="${out//\//_}_ptp_${i%in}out"
+        out="${out%.exec}"
+        outfile="${out//\//_}${i%.exec}out"
         serialfile="serial_${i%in}out"
-        mpirun -np ${NTHREADS} ${j}/main.exec ${i} ${outfile}
-        ${diffpath} ${serialfile} ${outfile}
-    done
-
-    echo "Collective runs"
-    for i in ${testfiles[@]}
-    do
-        echo "Running testfile:" ${i}
-        out="${j//\.\.\//}"
-        outfile="${out//\//_}_collective_${i%in}out"
-        serialfile="serial_${i%in}out"
-        mpirun -np ${NTHREADS} ${j}/main.exec ${i} ${outfile} 1
+        ${j} --nproc ${NTHREADS} ${i} ${outfile}
         ${diffpath} ${serialfile} ${outfile}
     done
 done
 
-# Parallel execution using OpenMP
-echo "============ OPENMP EXECUTION =============="
-for j in ${OPENMPtestfolders[@]}
+# Parallel execution using CilkPlus
+echo "============ CilkPlus EXECUTION =============="
+for j in ${cilkplusTestFiles}
 do
     echo $j
     for i in ${testfiles[@]}
     do
-        echo $i
+        echo "Running testfile:" ${i}
         out="${j//\.\.\//}"
-        outfile="${out//\//_}_${i%in}out"
+        out="${out%.exec}"
+        outfile="${out//\//_}${i%in}out"
         serialfile="serial_${i%in}out"
-        ${j}/main.exec ${i} ${outfile}
+        ${j} --nproc ${NTHREADS} ${i} ${outfile}
         ${diffpath} ${serialfile} ${outfile}
     done
 done
