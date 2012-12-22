@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
  * File Name : common.h
  * Creation Date : 06-11-2012
- * Last Modified : Wed 12 Dec 2012 08:37:45 PM EET
+ * Last Modified : Sun 23 Dec 2012 01:34:54 AM EET
  * Created By : Greg Liras <gregliras@gmail.com>
  * Created By : Alex Maurogiannis <nalfemp@gmail.com>
  _._._._._._._._._._._._._._._._._._._._._.*/
@@ -30,6 +30,7 @@ typedef enum OPMODE OPMODE;
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 struct time_struct {
     struct timeval latest_timestamp;

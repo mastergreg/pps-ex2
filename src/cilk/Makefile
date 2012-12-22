@@ -1,5 +1,5 @@
 TARGET = cilk
-CC = gcc
+CC = cilkc
 CCFLAGS +=
 OPT = 2
 
