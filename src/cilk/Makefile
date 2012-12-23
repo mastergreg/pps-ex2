@@ -14,9 +14,9 @@ else
 endif
 
 
-CCFILES += lu_rec.c lu_tiled.c
-OBJ +=  $(patsubst %.c,%.o,$(CCFILES))
-EXECFILES +=  $(patsubst %.c,%.exec,$(CCFILES))
+CCFILES += lu_rec.cilk lu_tiled.cilk
+OBJ +=  $(patsubst %.cilk,%.o,$(CCFILES))
+EXECFILES +=  $(patsubst %.cilk,%.exec,$(CCFILES))
 DEPENDS += $(wildcard *.h) 
 
 

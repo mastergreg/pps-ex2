@@ -146,8 +146,8 @@ double ** get_inv_u(double **a, int xs, int ys, int X, int Y)
 double ** allocate(int X,int Y)
 {
 	double ** array;
-	array=(double**)calloc(X,sizeof(double*));
 	int i;
+	array=(double**)calloc(X,sizeof(double*));
 	for (i=0;i<X;i++)
 		array[i]=(double*)calloc(Y,sizeof(double));
 	return array;
