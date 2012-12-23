@@ -1,15 +1,40 @@
-CC=gcc -O3 -Wall -o 
-OCC=gcc -O3 -fopenmp -Wall -o 
+TARGET = cilkplus
+CC = gcc-cilkplus
+CCFLAGS += -I/parlab/include/cilk -std=c11
+LDFLAGS += -lcilkrts -lcilk
+OPT = 2
 
-all: serial rec tiled
+DEBUG = "y"
 
-serial: lu_serial.c
-	$(CC) serial lu_serial.c 
-rec: lu_rec.c
-	$(CC) rec lu_rec.c 
-tiled: lu_tiled.c
-	$(CC) tiled lu_tiled.c 
+ifeq ($(DEBUG),"y")
+	CCFLAGS += -D$(TARGET)_DEBUG=1 -D$(TARGET)
+	CCFLAGS += -g -O0 -Wall -Wextra -Wuninitialized
+else
+	CCFLAGS += -Dset$(TARGET)_DEBUG=0 -D$(TARGET)
+	CCFLAGS += -O$(OPT) -Wall
+endif
 
+
+CCFILES += lu_rec.c lu_tiled.c
+OBJ +=  $(patsubst %.c,%.o,$(CCFILES))
+EXECFILES +=  $(patsubst %.c,%.exec,$(CCFILES))
+DEPENDS += $(wildcard *.h) 
+
+
+all: $(EXECFILES)
+
+
+%.exec:	%.o common.o 
+	$(CC) $(CCFLAGS) $(LDFLAGS) $^ -o $@
+
+%.o:	%.c
+	$(CC) -c $(CCFLAGS) $< -o $@
+
+
+.PHONY:	clean all indent tags
 clean:
-	rm serial rec tiled 
-
+	rm -f $(OBJ) $(TARGET) $(EXECFILES)
+indent:
+	astyle --style=linux $(CCFILES)
+tags:
+	ctags -R *

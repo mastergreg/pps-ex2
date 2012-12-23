@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <omp.h>
+#include <cilk/cilk.h>
 
 /* Define the size of a block. */
 #define BLOCK 16
