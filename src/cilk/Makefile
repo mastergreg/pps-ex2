@@ -22,9 +22,6 @@ DEPENDS += $(wildcard *.h)
 
 all: $(EXECFILES)
 
-$(TARGET): $(OBJ) $(DEPENDS)
-	$(CC) $(OBJ) -o $(TARGET)
-
 %.exec:	%.o common.o 
 	$(CC) $(CCFLAGS) $^ -o $@
 
