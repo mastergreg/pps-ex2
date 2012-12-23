@@ -26,15 +26,15 @@ $(TARGET): $(OBJ) $(DEPENDS)
 	$(CC) $(OBJ) -o $(TARGET)
 
 %.exec:	%.o common.o 
-	$(CC) $(CCFLAGS) $< -o $@
+	$(CC) $(CCFLAGS) $^ -o $@
 
-%.o:	%.c
+%.o:	%.cilk
 	$(CC) -c $(CCFLAGS) $< -o $@
 
 
 .PHONY:	clean all indent tags
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJ) $(TARGET) $(EXECFILES)
 indent:
 	astyle --style=linux $(CCFILES)
 tags:

@@ -15,4 +15,6 @@
 #define ABORT 
 #define CILK 
 
-#endif
+#endif /* USE_GCC_CILK */
+
+#endif /* CILK_HEAD_H */
