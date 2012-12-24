@@ -11,7 +11,7 @@ cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec)
 #cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
 cilkplusTestFiles=()
 NTHREADS=4
-for i in ${testfilesSizes[@]}
+for i in ${testFilesSizes[@]}
 do
     testfiles[${i}]="mat_${i}.in"
     if [[ 'x'$1 != 'xgen' && -f "mat_${i}.in" ]];
@@ -44,7 +44,7 @@ do
         echo "Running testfile:" ${i}
         out="${j//\.\.\//}"
         out="${out%.exec}"
-        outfile="${out//\//_}${i%.exec}out"
+        outfile="${out//\//_}_${i%in}out"
         serialfile="serial_${i%in}out"
         ${j} --nproc ${NTHREADS} ${i} ${outfile}
         ${diffpath} ${serialfile} ${outfile}

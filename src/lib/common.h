@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
  * File Name : common.h
  * Creation Date : 06-11-2012
- * Last Modified : Sun 23 Dec 2012 01:34:54 AM EET
+ * Last Modified : Mon 24 Dec 2012 03:47:05 AM EET
  * Created By : Greg Liras <gregliras@gmail.com>
  * Created By : Alex Maurogiannis <nalfemp@gmail.com>
  _._._._._._._._._._._._._._._._._._._._._.*/
@@ -55,6 +55,7 @@ Matrix *get_matrix(char *filename, int max_rank, OPMODE operation);
 double **appoint_2D(double *A, int N, int M);
 void fprint_matrix_2d(FILE *fp, int N, int M, double *A);
 void print_matrix_2d(int N, int M, double *A);
+void print_matrix_2d_to_file(char *fname, int N, int M, double *A);
 double timer(void);
 void usage(int argc, char **argv);
 void *  get_propagation(int argc, char **argv);

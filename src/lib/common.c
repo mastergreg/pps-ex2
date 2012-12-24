@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
  * File Name : common.c
  * Creation Date : 06-11-2012
- * Last Modified : Wed 12 Dec 2012 08:51:50 PM EET
+ * Last Modified : Mon 24 Dec 2012 03:47:09 AM EET
  * Created By : Greg Liras <gregliras@gmail.com>
  * Created By : Alex Maurogiannis <nalfemp@gmail.com>
  _._._._._._._._._._._._._._._._._._._._._.*/
@@ -107,6 +107,14 @@ void fprint_matrix_2d(FILE *fp, int N, int M, double *A)
     }
     fprintf(fp, "\n");
 } 
+
+void print_matrix_2d_to_file(char *fname, int N, int M, double *A)
+{
+    FILE *f;
+    f = fopen(fname, "w");
+    fprint_matrix_2d(f, N, M, A);
+    fclose(f);
+}
 
 void print_matrix_2d(int N, int M, double *A)
 {
