@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
  * File Name : common.c
  * Creation Date : 06-11-2012
- * Last Modified : Mon 24 Dec 2012 03:47:09 AM EET
+ * Last Modified : Mon 24 Dec 2012 04:36:33 AM EET
  * Created By : Greg Liras <gregliras@gmail.com>
  * Created By : Alex Maurogiannis <nalfemp@gmail.com>
  _._._._._._._._._._._._._._._._._._._._._.*/
@@ -179,17 +179,28 @@ double timer(void)
 
 void usage(int argc, char **argv)
 {
-#ifdef USE_MPI /* USE_MPI */
+    int i;
+#if USE_MPI /* USE_MPI */
     if(argc > 4 || argc < 3) {
         printf("Usage: %s <matrix file> <output file> [propagation mode: default=0 (ptp)]\n", argv[0]);
+        printf("Input was ");
+        for(i = 0; i < argc; i++) {
+            printf("%s ", argv[i]);
+        }
+        printf("\n");
         exit(EXIT_FAILURE);
     }
 #else  
     if(argc != 3) {
         printf("Usage: %s <matrix file> <output file>\n", argv[0]);
+        printf("Input was ");
+        for(i = 0; i < argc; i++) {
+            printf("%s ", argv[i]);
+        }
+        printf("\n");
         exit(EXIT_FAILURE);
     }
-#endif 
+#endif
 }
 
 Matrix *get_matrix(char *filename, int max_rank, OPMODE operation)
