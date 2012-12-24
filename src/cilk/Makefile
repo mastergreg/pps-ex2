@@ -1,16 +1,16 @@
-TARGET = cilk
+TARGET = USE_CILK
 CC = cilkc
-CCFLAGS +=
+CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused
 OPT = 2
 
 DEBUG = "y"
 
 ifeq ($(DEBUG),"y")
 	CCFLAGS += -D$(TARGET)_DEBUG=1 -D$(TARGET)
-	CCFLAGS += -g -O0 -Wall -Wextra -Wuninitialized
+	CCFLAGS += -g -O0 
 else
 	CCFLAGS += -Dset$(TARGET)_DEBUG=0 -D$(TARGET)
-	CCFLAGS += -O$(OPT) -Wall
+	CCFLAGS += -O$(OPT)
 endif
 
 
@@ -22,7 +22,7 @@ DEPENDS += $(wildcard *.h)
 
 all: $(EXECFILES)
 
-%.exec:	%.o common.o 
+%.exec:	%.o common.o
 	$(CC) $(CCFLAGS) $^ -o $@
 
 %.o:	%.cilk
@@ -33,6 +33,6 @@ all: $(EXECFILES)
 clean:
 	rm -f $(OBJ) $(TARGET) $(EXECFILES)
 indent:
-	astyle --style=linux $(CCFILES)
+	astyle -A3 $(CCFILES)
 tags:
 	ctags -R *
