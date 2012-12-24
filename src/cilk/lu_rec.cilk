@@ -20,9 +20,6 @@ cilk void upper_solve(double ** a, int x1, int y1, double ** u, int x2, int y2, 
 static void block_upper_solve(double ** a, int x1, int y1, double ** u, int x2, int y2, int N);
 cilk void aux_upper_solve(double ** a1, int x1, int y1, double ** a2, int x2, int y2, double ** u, int x3, int y3, int N);
 cilk void lu(double ** a, int xs, int ys, int N);
-void print(double ** a,int N);
-double ** allocate(int X,int Y);
-void input(double ** a, int X, int Y);
 
 cilk int main(int argc, char *argv[])
 {
@@ -238,33 +235,3 @@ cilk void lu(double ** a, int xs, int ys, int N)
     spawn lu(a,xs+hn,ys+hn,hn);
     sync;
 }
-
-void print(double ** a,int N)
-{
-    int i,j;
-    for (i=0; i<N; i++) {
-        for (j=0; j<N; j++)
-            printf("%.2lf ",a[i][j]);
-        printf("\n");
-    }
-}
-
-double ** allocate(int X,int Y)
-{
-    double ** array;
-    int i;
-    array=(double**)calloc(X,sizeof(double*));
-    for (i=0; i<X; i++)
-        array[i]=(double*)calloc(Y,sizeof(double));
-    return array;
-}
-
-void input(double ** a, int X, int Y)
-{
-    int i,j;
-    for (i=0; i<X; i++)
-        for (j=0; j<Y; j++)
-            a[i][j]=((double)rand()/1000000.0);
-}
-
-
