@@ -10,6 +10,7 @@ testFilesSizes=(16 128 1024 2048)
 cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec)
 #cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
 cilkplusTestFiles=()
+slog="serial.log"
 NTHREADS=4
 for i in ${testFilesSizes[@]}
 do
@@ -27,17 +28,25 @@ done
 echo "============ SERIAL EXECUTION =============="
 for i in ${testfiles[@]}
 do
-    echo "Running testfile :" ${i}
     out="${j//\.\.\//}"
     serialfile="serial_${i%in}out"
     inTime=$(stat -c %Y $i)
     if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
     then
         echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
+        grep "${i}" ${slog} | tail -n 1 | tee -a ${slog}.new
     else
-        ${serialpath} ${i} ${serialfile}
+        outputline=$(${serialpath} ${i} ${serialfile})
+        if [[ $? -eq 0 ]];
+        then
+            echo -n "Testfile : ${i} " | tee -a ${slog}.new
+            echo ${outputline} | tee -a ${slog}.new
+        else
+            echo ${outputline}
+        fi
     fi
 done
+mv ${slog}.new ${slog}
 
 
 # Parallel execution using Cilk
