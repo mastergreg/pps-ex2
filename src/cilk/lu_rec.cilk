@@ -105,7 +105,6 @@ cilk void schur(double ** a, int x1, int y1, double ** v, int x2, int y2, double
     spawn schur(a,x1,y1+hn,v,x2,y2,w,x3,y3+hn,hn);
     spawn schur(a,x1+hn,y1,v,x2+hn,y2,w,x3,y3,hn);
     spawn schur(a,x1+hn,y1+hn,v,x2+hn,y2,w,x3,y3+hn,hn);
-
     sync;
 
 
@@ -113,7 +112,6 @@ cilk void schur(double ** a, int x1, int y1, double ** v, int x2, int y2, double
     spawn schur(a,x1,y1+hn,v,x2,y2+hn,w,x3+hn,y3+hn,hn);
     spawn schur(a,x1+hn,y1,v,x2+hn,y2+hn,w,x3+hn,y3,hn);
     spawn schur(a,x1+hn,y1+hn,v,x2+hn,y2+hn,w,x3+hn,y3+hn,hn);
-
     sync;
 }
 
@@ -200,7 +198,6 @@ cilk void upper_solve(double ** a, int x1, int y1, double ** u, int x2, int y2, 
     /* Solve with recursive calls. */
     spawn aux_upper_solve(a,x1,y1,a,x1,y1+hn,u,x2,y2,hn);
     spawn aux_upper_solve(a,x1+hn,y1,a,x1+hn,y1+hn,u,x2,y2,hn);
-
     sync;
 }
 
@@ -220,18 +217,15 @@ cilk void lu(double ** a, int xs, int ys, int N)
 
     /***** Compute LU decomposition on upper left tile A00 recursively*****/
     spawn lu(a,xs,ys,hn);
-
     sync;
 
     /***** Compute LU decomposition on upper right A01 and lower left A10 tiles via substitution recursively*****/
     spawn lower_solve(a,xs,ys+hn,a,xs,ys,hn);
     spawn upper_solve(a,xs+hn,ys,a,xs,ys,hn);
-
     sync;
 
     /***** Update lower right tile A11 recursively*****/
     spawn schur(a,xs+hn,ys+hn,a,xs+hn,ys,a,xs,ys+hn,hn);
-
     sync;
     /***** Compute LU decomposition on lower right tile A11 recursively*****/
     spawn lu(a,xs+hn,ys+hn,hn);

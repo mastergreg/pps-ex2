@@ -3,7 +3,9 @@ CC = cilkc
 CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused
 OPT = 2
 
-DEBUG = "y"
+ifndef DEBUG
+	DEBUG = "y"
+endif
 
 ifeq ($(DEBUG),"y")
 	CCFLAGS += -D$(TARGET)_DEBUG=1 -D$(TARGET)
