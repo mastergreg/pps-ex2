@@ -30,7 +30,13 @@ do
     echo "Running testfile :" ${i}
     out="${j//\.\.\//}"
     serialfile="serial_${i%in}out"
-    ${serialpath} ${i} ${serialfile}
+    inTime=$(stat -c %Y $i)
+    if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
+    then
+        echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
+    else
+        ${serialpath} ${i} ${serialfile}
+    fi
 done
 
 
