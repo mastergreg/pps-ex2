@@ -9,7 +9,7 @@ serialpath=../serial/main.exec
 testFilesSizes=(16 128 1024 2048)
 cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec)
 #cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
-cilkplusTestFiles=()
+cilkplusTestFiles=(../cilkplus/lu_rec.exec)
 slog="serial.log"
 NTHREADS=4
 for i in ${testFilesSizes[@]}
@@ -78,7 +78,7 @@ do
         out="${out%.exec}"
         outfile="${out//\//_}${i%in}out"
         serialfile="serial_${i%in}out"
-        ${j} --nproc ${NTHREADS} ${i} ${outfile}
+        ${j} ${i} ${outfile}
         ${diffpath} ${serialfile} ${outfile}
     done
 done

@@ -1,17 +1,20 @@
-TARGET = cilkplus
+TARGET = USE_CILKPLUS
 CC = gcc-cilkplus
-CCFLAGS += -I/parlab/include/cilk -std=c11
-LDFLAGS += -lcilkrts -lcilk
+CCFLAGS += -std=c11
+CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused -fcilkplus
+LDFLAGS +=  -L/parlab/lib/ -lcilkrts 
 OPT = 2
 
-DEBUG = "y"
+ifndef DEBUG
+	DEBUG = "y"
+endif
 
 ifeq ($(DEBUG),"y")
 	CCFLAGS += -D$(TARGET)_DEBUG=1 -D$(TARGET)
-	CCFLAGS += -g -O0 -Wall -Wextra -Wuninitialized
+	CCFLAGS += -g -O0
 else
-	CCFLAGS += -Dset$(TARGET)_DEBUG=0 -D$(TARGET)
-	CCFLAGS += -O$(OPT) -Wall
+	CCFLAGS += -D$(TARGET)_DEBUG=0 -D$(TARGET)
+	CCFLAGS += -O$(OPT)
 endif
 
 
@@ -22,7 +25,6 @@ DEPENDS += $(wildcard *.h)
 
 
 all: $(EXECFILES)
-
 
 %.exec:	%.o common.o 
 	$(CC) $(CCFLAGS) $(LDFLAGS) $^ -o $@
@@ -35,6 +37,6 @@ all: $(EXECFILES)
 clean:
 	rm -f $(OBJ) $(TARGET) $(EXECFILES)
 indent:
-	astyle --style=linux $(CCFILES)
+	astyle -A3 $(CCFILES)
 tags:
 	ctags -R *
