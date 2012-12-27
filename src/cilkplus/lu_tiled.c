@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include "common.h"
 
 void mm(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, double ** tmp_res, int M, int N, int P, int sign);
 void mm_lower(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
@@ -27,22 +28,24 @@ int main(int argc, char *argv[])
 	int N,B,range;
 	struct timeval ts, tf;
 	double time;
+    Matrix *mat;
+
+    if(argc != 4) {
+        printf("Usage: %s <matrix file> <output file> <block_size>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
 	
-	if (argc<3) {
-		printf("Usage: ./[executable] [grid_size] [block_size]\n");
-		exit(1);
-	}
-	
-	N=atoi(argv[1]);
-	B=atoi(argv[2]);
+    mat = get_matrix(argv[1], 0, CONTINUOUS);
+    N = mat->N;
+    A = appoint_2D(mat->A, N, N);
+
+	B=atoi(argv[3]);
 
 	if (N%B!=0 || B==1) {
 		printf("Grid must be multiple of block and greater than 1\n");
 		exit(1);
 	}
 	
-	A=allocate(N,N);
-	input(A,N,N);
 	range=N/B;
 
 	low_res=allocate(B,(range-1)*B);
@@ -54,6 +57,8 @@ int main(int argc, char *argv[])
 	time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
 	printf("Tiled\t%d\t%lf\t%d\t\n", N,time,B);
 //	print(A,N);
+    upper_triangularize(N, A);
+    print_matrix_2d_to_file(argv[2], N, N, *A);
 	return 0;
 }
 

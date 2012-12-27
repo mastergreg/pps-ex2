@@ -7,10 +7,13 @@ diffpath=../diffpy/diff.py
 #diffpath=echo
 serialpath=../serial/main.exec
 testFilesSizes=(16 128 1024 2048)
-cilkTestFiles=(../cilk/lu_rec.exec)
-#cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
-cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
+#cilkRec="../cilk/lu_rec.exec"
+#cilkTiled="../cilk/lu_tiled"
+#cilkplusRec="../cilkplus/lu_rec.exec"
+cilkplusTiled="../cilkplus/lu_tiled.exec"
 slog="serial.log"
+
+block_size=16
 NTHREADS=4
 for i in ${testFilesSizes[@]}
 do
@@ -51,8 +54,9 @@ mv ${slog}.new ${slog}
 
 # Parallel execution using Cilk
 echo "============ Cilk EXECUTION =============="
-for j in ${cilkTestFiles[@]}
-do
+if [[ ! -z ${cilkRec} ]];
+then
+    j=${cilkRec}
     echo $j
     for i in ${testfiles[@]}
     do
@@ -64,21 +68,55 @@ do
         ${j} --nproc ${NTHREADS} ${i} ${outfile}
         ${diffpath} ${serialfile} ${outfile}
     done
-done
+fi
 
-# Parallel execution using CilkPlus
-echo "============ CilkPlus EXECUTION =============="
-for j in ${cilkplusTestFiles[@]}
-do
+if [[ ! -z ${cilkTiled} ]];
+then
+    j=${cilkTiled}
     echo $j
     for i in ${testfiles[@]}
     do
         echo "Running testfile:" ${i}
         out="${j//\.\.\//}"
         out="${out%.exec}"
-        outfile="${out//\//_}${i%in}out"
+        outfile="${out//\//_}_${i%in}out"
+        serialfile="serial_${i%in}out"
+        ${j} --nproc ${NTHREADS} ${i} ${outfile} ${block_size}
+        ${diffpath} ${serialfile} ${outfile}
+    done
+fi
+
+# Parallel execution using CilkPlus
+echo "============ CilkPlus EXECUTION =============="
+if [[ ! -z ${cilkplusRec} ]];
+then
+    j=${cilkplusRec}
+    echo $j
+    for i in ${testfiles[@]}
+    do
+        echo "Running testfile:" ${i}
+        out="${j//\.\.\//}"
+        out="${out%.exec}"
+        outfile="${out//\//_}_${i%in}out"
         serialfile="serial_${i%in}out"
         ${j} ${i} ${outfile}
         ${diffpath} ${serialfile} ${outfile}
     done
-done
+fi
+
+if [[ ! -z ${cilkplusTiled} ]];
+then
+    j=${cilkplusTiled}
+    echo $j
+    for i in ${testfiles[@]}
+    do
+        echo "Running testfile:" ${i}
+        out="${j//\.\.\//}"
+        out="${out%.exec}"
+        outfile="${out//\//_}_${i%in}out"
+        serialfile="serial_${i%in}out"
+        echo "${j} ${i} ${outfile} ${block_size}"
+        ${j} ${i} ${outfile} ${block_size}
+        ${diffpath} ${serialfile} ${outfile}
+    done
+fi
