@@ -68,20 +68,27 @@ void lu(double **a, int range, int B)
 		lu_kernel(a,k*B,k*B,B,B);
 
 		/****Compute inverted L and U matrices of upper left tile*****/
-		l_inv=get_inv_l(a,k*B,k*B,B,B);
-		u_inv=get_inv_u(a,k*B,k*B,B,B);
+		l_inv= cilk_spawn get_inv_l(a,k*B,k*B,B,B);
+		u_inv= cilk_spawn get_inv_u(a,k*B,k*B,B,B);
+
+        cilk_sync;
 
 		/*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
 		for (i=k+1;i<range;i++) {
-			mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
-			mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
+			cilk_spawn mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
+			cilk_spawn mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
 		}
+
+        cilk_sync;
 
 		/*****Update trailing blocks*****/
 		for (i=k+1;i<range;i++) {
 			for (j=k+1;j<range;j++)
-				mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
+				cilk_spawn mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
 		} 
+
+        cilk_sync;
+
 	}
 
 	/***** Compute LU on final diagonal block *****/

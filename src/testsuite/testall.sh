@@ -7,9 +7,9 @@ diffpath=../diffpy/diff.py
 #diffpath=echo
 serialpath=../serial/main.exec
 testFilesSizes=(16 128 1024 2048)
-cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec)
+cilkTestFiles=(../cilk/lu_rec.exec)
 #cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
-cilkplusTestFiles=(../cilkplus/lu_rec.exec)
+cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
 slog="serial.log"
 NTHREADS=4
 for i in ${testFilesSizes[@]}
@@ -51,7 +51,7 @@ mv ${slog}.new ${slog}
 
 # Parallel execution using Cilk
 echo "============ Cilk EXECUTION =============="
-for j in ${cilkTestFiles}
+for j in ${cilkTestFiles[@]}
 do
     echo $j
     for i in ${testfiles[@]}
@@ -68,7 +68,7 @@ done
 
 # Parallel execution using CilkPlus
 echo "============ CilkPlus EXECUTION =============="
-for j in ${cilkplusTestFiles}
+for j in ${cilkplusTestFiles[@]}
 do
     echo $j
     for i in ${testfiles[@]}
