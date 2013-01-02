@@ -2,7 +2,7 @@ TARGET = USE_CILKPLUS
 CC = gcc-cilkplus
 CCFLAGS += -std=c11
 CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused -fcilkplus
-LDFLAGS +=  -L/parlab/lib/ -lcilkrts 
+LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  
 OPT = 2
 
 ifndef DEBUG
@@ -27,10 +27,10 @@ DEPENDS += $(wildcard *.h)
 all: $(EXECFILES)
 
 %.exec:	%.o common.o 
-	$(CC) $(CCFLAGS) $(LDFLAGS) $^ -o $@
+	$(CC) $(CCFLAGS) $^ $(LDFLAGS) -o $@
 
 %.o:	%.c
-	$(CC) -c $(CCFLAGS) $< -o $@
+	$(CC) $< -c $(CCFLAGS) -o $@
 
 
 .PHONY:	clean all indent tags
