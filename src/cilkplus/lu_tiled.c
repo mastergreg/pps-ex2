@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
 	printf("Tiled\t%d\t%lf\n", N,time);
 
-    //upper_triangularize(N, A);
+    upper_triangularize(N, A);
     print_matrix_2d_to_file(argv[2], N, N, *A);
 	return 0;
 }
