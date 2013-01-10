@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
     double time;
 
     Matrix *mat;
-
     usage(argc, argv);
 
     mat = get_matrix(argv[1], 0, CONTINUOUS);

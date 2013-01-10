@@ -1,15 +1,19 @@
-CC=gcc -O3 -Wall -o 
-OCC=gcc -O3 -fopenmp -Wall -o 
+CC=gcc
+CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused 
 
-all: serial rec tiled
 
-serial: lu_serial.c
-	$(CC) serial lu_serial.c 
-rec: lu_rec.c
-	$(CC) rec lu_rec.c 
-tiled: lu_tiled.c
-	$(CC) tiled lu_tiled.c 
+CCFILES += lu_tiled.c lu_rec.c
+OBJ +=  $(patsubst %.c,%.o,$(CCFILES))
+EXECFILES +=  $(patsubst %.c,%.exec,$(CCFILES))
+DEPENDS += $(wildcard *.h) 
+
+all: $(EXECFILES)
+
+%.exec:	%.o common.o 
+	$(CC) $(CCFLAGS) $^ -o $@
+
+%.o:	%.c
+	$(CC) $< -c $(CCFLAGS) -o $@
 
 clean:
-	rm serial rec tiled 
-
+	rm -f $(OBJ) $(TARGET) $(EXECFILES)

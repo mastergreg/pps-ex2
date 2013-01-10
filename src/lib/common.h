@@ -58,6 +58,7 @@ void print_matrix_2d(int N, int M, double *A);
 void print_matrix_2d_to_file(char *fname, int N, int M, double *A);
 double timer(void);
 void usage(int argc, char **argv);
+void tiled_usage(int argc, char **argv);
 void *  get_propagation(int argc, char **argv);
 
 void upper_triangularize(int N, double **Ap2D);
