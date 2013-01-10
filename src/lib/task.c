@@ -1,13 +1,14 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.c
 * Creation Date : 09-01-2013
-* Last Modified : Wed 09 Jan 2013 02:03:32 AM EET
+* Last Modified : Fri 11 Jan 2013 12:11:36 AM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 
 #include "task.h"
 
 static struct_task task_array[MAX_TASKS];
+static task_node task_nodes_array[MAX_TASKS];
 static uint32_t free_tasks[MAX_TASKS];
 static uint32_t free_tasks_next = 0; /* */
 
@@ -15,9 +16,9 @@ static uint32_t ready_tasks[MAX_TASKS];
 static uint32_t ready_tasks_count = 0;
 
 
-cilk void execute(struct_task *t)
+cilk void execute(struct_task *t, int id)
 {
-    (*t->func)(t>args);
+    *t->value = (*t->func)(t->args, id);
 }
 
 cilk struct_task * set_task(void *func, void *args)
@@ -31,7 +32,7 @@ cilk struct_task * set_task(void *func, void *args)
 cilk void run_task(uint32_t id)
 {
     struct_task *t = task_array+id;
-    (*t->func)(t>args);
+    t->value = (*t->func)(t->args, id);
 }
 
 
@@ -70,6 +71,4 @@ void del_task(uint32_t id)
         free_tasks_next--;
         free_tasks[free_tasks_next] = id;
     }
-
-
 }

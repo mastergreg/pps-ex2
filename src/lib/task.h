@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.h
 * Creation Date : 09-01-2013
-* Last Modified : Wed 09 Jan 2013 01:19:34 AM EET
+* Last Modified : Fri 11 Jan 2013 12:10:41 AM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 #ifndef TASK_H 
@@ -14,8 +14,9 @@ _._._._._._._._._._._._._._._._._._._._._.*/
 #include <stdlib.h>
 
 struct task {
-    void (*func)(void *);
+    void *(*func)(void *, int);
     void *args;
+    void *value;
 };
 
 typedef struct task struct_task;
@@ -28,5 +29,9 @@ struct task_node {
     uint32_t *children;
     uint32_t dependencies_count;
 };
+
+
+extern task_node *task_nodes_config;
+extern int *task_number_config;
 
 #endif /* TASK_H */
