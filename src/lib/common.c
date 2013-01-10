@@ -193,7 +193,7 @@ void usage(int argc, char **argv)
 #else  
     if(argc != 3) {
         printf("Usage: %s <matrix file> <output file>\n", argv[0]);
-        printf("Input was ");
+        printf("Input was: ");
         for(i = 0; i < argc; i++) {
             printf("%s ", argv[i]);
         }
@@ -202,6 +202,21 @@ void usage(int argc, char **argv)
     }
 #endif
 }
+
+void tiled_usage(int argc, char **argv)
+{
+    int i;
+    if(argc != 4) {
+        printf("Usage: %s <matrix file> <output file> <block size>\n", argv[0]);
+        printf("Input was: ");
+        for(i = 0; i < argc; i++) {
+            printf("%s ", argv[i]);
+        }
+        printf("\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
 
 Matrix *get_matrix(char *filename, int max_rank, OPMODE operation)
 {
