@@ -4,7 +4,7 @@ set -e
 
 genpathpath=../generator/generate.exec
 diffpath=../diffpy/diff.py
-#diffpath=echo
+diffpath=echo
 serialpath=../serial/main.exec
 testFilesSizes=(16 128 1024 2048)
 cilkTestFiles=(../cilk/lu_rec.exec)

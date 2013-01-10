@@ -1,0 +1,13 @@
+syntax: glob
+*.exec
+local
+*.swp
+*.aux
+*.pyg
+*.log
+*.o
+*.in
+*.out
+*~
+tmp
+tags
