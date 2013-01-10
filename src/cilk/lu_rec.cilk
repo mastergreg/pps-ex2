@@ -39,8 +39,8 @@ cilk int main(int argc, char *argv[])
     gettimeofday(&ts,NULL);
 
     spawn lu(A,0,0,N);
-
     sync;
+
     gettimeofday(&tf,NULL);
     time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
 
@@ -48,7 +48,6 @@ cilk int main(int argc, char *argv[])
 //      print(A,N);
     upper_triangularize(N, A);
     print_matrix_2d_to_file(argv[2], N, N, *A);
-
     
     return 0;
 }
@@ -112,7 +111,7 @@ cilk void schur(double ** a, int x1, int y1, double ** v, int x2, int y2, double
     spawn schur(a,x1,y1+hn,v,x2,y2+hn,w,x3+hn,y3+hn,hn);
     spawn schur(a,x1+hn,y1,v,x2+hn,y2+hn,w,x3+hn,y3,hn);
     spawn schur(a,x1+hn,y1+hn,v,x2+hn,y2+hn,w,x3+hn,y3+hn,hn);
-    sync;
+
 }
 
 
@@ -156,7 +155,6 @@ cilk void lower_solve(double ** a, int x1, int y1, double ** l, int x2, int y2, 
     /* Solve with recursive calls. */
     spawn aux_lower_solve(a,x1,y1,a,x1+hn,y1,l,x2,y2,hn);
     spawn aux_lower_solve(a,x1,y1+hn,a,x1+hn,y1+hn,l,x2,y2,hn);
-    sync;
 }
 
 /***** Forward substitution for base case *****/
@@ -198,7 +196,6 @@ cilk void upper_solve(double ** a, int x1, int y1, double ** u, int x2, int y2, 
     /* Solve with recursive calls. */
     spawn aux_upper_solve(a,x1,y1,a,x1,y1+hn,u,x2,y2,hn);
     spawn aux_upper_solve(a,x1+hn,y1,a,x1+hn,y1+hn,u,x2,y2,hn);
-    sync;
 }
 
 
@@ -229,5 +226,4 @@ cilk void lu(double ** a, int xs, int ys, int N)
     sync;
     /***** Compute LU decomposition on lower right tile A11 recursively*****/
     spawn lu(a,xs+hn,ys+hn,hn);
-    sync;
 }
