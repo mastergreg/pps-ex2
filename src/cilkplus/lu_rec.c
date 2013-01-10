@@ -40,9 +40,8 @@ int main(int argc, char *argv[])
 
     gettimeofday(&ts,NULL);
 
-    cilk_spawn lu(A,0,0,N);
+    lu(A,0,0,N);
 
-    cilk_sync;
     gettimeofday(&tf,NULL);
     time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
 
@@ -114,7 +113,6 @@ void schur(double ** a, int x1, int y1, double ** v, int x2, int y2, double ** w
     cilk_spawn schur(a,x1,y1+hn,v,x2,y2+hn,w,x3+hn,y3+hn,hn);
     cilk_spawn schur(a,x1+hn,y1,v,x2+hn,y2+hn,w,x3+hn,y3,hn);
     cilk_spawn schur(a,x1+hn,y1+hn,v,x2+hn,y2+hn,w,x3+hn,y3+hn,hn);
-    cilk_sync;
 }
 
 
@@ -134,11 +132,9 @@ void aux_lower_solve(double ** a1, int x1, int y1, double ** a2, int x2, int y2,
 {
 
     /* Solve with recursive calls. */
-    cilk_spawn lower_solve(a1,x1,y1,l,x3,y3,N);
-    cilk_sync;
-    cilk_spawn schur(a2,x2,y2,l,x3+N,y3,a1,x1,y1,N);
-    cilk_sync;
-    cilk_spawn lower_solve(a2,x2,y2,l,x3+N,y3+N,N);
+    lower_solve(a1,x1,y1,l,x3,y3,N);
+    schur(a2,x2,y2,l,x3+N,y3,a1,x1,y1,N);
+    lower_solve(a2,x2,y2,l,x3+N,y3+N,N);
 }
 
 /***** Recursive forward substitution - computes a' where la'=a, l lower triangular matrix *****/
@@ -158,7 +154,6 @@ void lower_solve(double ** a, int x1, int y1, double ** l, int x2, int y2, int N
     /* Solve with recursive calls. */
     cilk_spawn aux_lower_solve(a,x1,y1,a,x1+hn,y1,l,x2,y2,hn);
     cilk_spawn aux_lower_solve(a,x1,y1+hn,a,x1+hn,y1+hn,l,x2,y2,hn);
-    cilk_sync;
 }
 
 /***** Forward substitution for base case *****/
@@ -177,11 +172,9 @@ static void block_upper_solve(double ** a, int x1, int y1, double ** u, int x2, 
 
 void aux_upper_solve(double ** a1, int x1, int y1, double ** a2, int x2, int y2, double ** u, int x3, int y3, int N)
 {
-    cilk_spawn upper_solve(a1,x1,y1,u,x3,y3,N);
-    cilk_sync;
-    cilk_spawn schur(a2,x2,y2,a1,x1,y1,u,x3,y3+N,N);
-    cilk_sync;
-    cilk_spawn upper_solve(a2,x2,y2,u,x3+N,y3+N,N);
+    upper_solve(a1,x1,y1,u,x3,y3,N);
+    schur(a2,x2,y2,a1,x1,y1,u,x3,y3+N,N);
+    upper_solve(a2,x2,y2,u,x3+N,y3+N,N);
 }
 
 /***** Recursive forward substitution - computes a' where a'u=a, u upper triangular matrix *****/
@@ -200,7 +193,6 @@ void upper_solve(double ** a, int x1, int y1, double ** u, int x2, int y2, int N
     /* Solve with recursive calls. */
     cilk_spawn aux_upper_solve(a,x1,y1,a,x1,y1+hn,u,x2,y2,hn);
     cilk_spawn aux_upper_solve(a,x1+hn,y1,a,x1+hn,y1+hn,u,x2,y2,hn);
-    cilk_sync;
 }
 
 
@@ -218,8 +210,7 @@ void lu(double ** a, int xs, int ys, int N)
     hn = N / 2;
 
     /***** Compute LU decomposition on upper left tile A00 recursively*****/
-    cilk_spawn lu(a,xs,ys,hn);
-    cilk_sync;
+    lu(a,xs,ys,hn);
 
     /***** Compute LU decomposition on upper right A01 and lower left A10 tiles via substitution recursively*****/
     cilk_spawn lower_solve(a,xs,ys+hn,a,xs,ys,hn);
@@ -227,9 +218,7 @@ void lu(double ** a, int xs, int ys, int N)
     cilk_sync;
 
     /***** Update lower right tile A11 recursively*****/
-    cilk_spawn schur(a,xs+hn,ys+hn,a,xs+hn,ys,a,xs,ys+hn,hn);
-    cilk_sync;
+    schur(a,xs+hn,ys+hn,a,xs+hn,ys,a,xs,ys+hn,hn);
     /***** Compute LU decomposition on lower right tile A11 recursively*****/
-    cilk_spawn lu(a,xs+hn,ys+hn,hn);
-    cilk_sync;
+    lu(a,xs+hn,ys+hn,hn);
 }
