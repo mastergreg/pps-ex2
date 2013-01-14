@@ -22,7 +22,7 @@ cilk double ** get_inv_u(double **a, int xs, int ys, int X, int Y);
 cilk void lu(double ** a, int num_blocks, int B);
 void lu_kernel(double ** a, int xs, int ys, int X, int Y);
 void print(double ** a, int N);
-void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P);
+cilk void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P);
 double ** up_res, ** low_res;
 
 cilk void for_spawn_updates(int k, int num_blocks, int initk, int initnum_blocks, double **a, int B);
@@ -136,30 +136,38 @@ cilk void for_spawn_mm(int i, int stop, int k, int num_blocks, double **a, doubl
     if(current_range > 0) {
         spawn for_spawn_mm(i, i + current_range / 2, k, num_blocks, a, l_inv, u_inv, B);
         spawn for_spawn_mm(i + current_range / 2 + 1, stop, k, num_blocks, a, l_inv, u_inv, B);
-        sync;
     }
     else if (current_range == 0) {
         spawn mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
         spawn mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
-        sync;
+    }
+}
+
+cilk void for_spawn_inner_updates(int start, int stop, int k, int num_blocks, int i, double **a, int B)
+{
+    int current_range;
+
+    current_range = stop - start;
+    if(current_range > 0) {
+        spawn for_spawn_inner_updates(start, start + current_range / 2, k, num_blocks, i, a, B);
+        spawn for_spawn_inner_updates(start + current_range / 2 + 1, stop, k, num_blocks, i, a, B);
+    }
+    else if (current_range == 0) {
+        spawn mm_update(a,i*B,k*B,a,k*B,start*B,a,i*B,start*B,B,B,B);
     }
 }
 
 cilk void for_spawn_updates(int i, int stop, int k, int num_blocks, double **a, int B)
 {
-    int j;
     int current_range;
 
     current_range = stop - i;
     if(current_range > 0) {
         spawn for_spawn_updates(i, i + current_range / 2, k, num_blocks, a, B);
         spawn for_spawn_updates(i + current_range / 2 + 1, stop, k, num_blocks, a, B);
-        sync;
     }
     else if (current_range == 0) {
-        for (j=k+1; j<num_blocks; j++) {
-            mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
-        }
+        spawn for_spawn_inner_updates(k+1, num_blocks-1, k, num_blocks, i, a, B);
     }
 }
 
@@ -265,20 +273,39 @@ cilk void mm_lower(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_
     }
 }
 
-void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
-{
-    int i,j,k;
-    double sum=0;
 
-    for (i=0; i<M; i++) {
+cilk void for_spawn_outter_mm_update(int start, int stop, \
+            double ** a1, int x_1, int y_1, \
+            double ** a2, int x_2, int y_2, \
+            double ** res, int x_3, int y_3, \
+            int M, int N, int P)
+{
+    int j, k;
+    int current_range;
+    double sum;
+    current_range = stop - start;
+
+    if(current_range > 0) {
+        spawn for_spawn_outter_mm_update(start, start + current_range / 2,
+                a1, x_1, y_1, a2, x_2, y_2, res, x_3, y_3, M, N, P);
+        spawn for_spawn_outter_mm_update(start + current_range / 2 + 1, stop,
+                a1, x_1, y_1, a2, x_2, y_2, res, x_3, y_3, M, N, P);
+    }
+    else if (current_range == 0) {
         for (j=0; j<P; j++) {
-            for (k=0; k<N; k++) {
-                sum+=a1[i+x_1][k+y_1]*a2[k+x_2][j+y_2];
-            }
-            res[i+x_3][j+y_3]-=sum;
             sum=0;
+            for (k=0; k<N; k++) {
+                sum+=a1[start+x_1][k+y_1]*a2[k+x_2][j+y_2];
+            }
+            res[start+x_3][j+y_3]-=sum;
         }
     }
+}
+
+cilk void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
+{
+    spawn for_spawn_outter_mm_update(0, M-1, \
+        a1, x_1, y_1, a2, x_2, y_2, res, x_3, y_3, M, N, P);
 }
 
 /***** Matrix multiplication: sign=0 --> res=a1*a2, sign=1 --> res=-a1*a2, op = 0 --> res=a1*a2, op = 1 --> res=res+a1*a2  *****/
