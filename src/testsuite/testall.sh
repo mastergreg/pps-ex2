@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 
 genpathpath=../generator/generate.exec
@@ -7,7 +7,7 @@ diffpath=../diffpy/diff.py
 #diffpath=echo
 serialpath=../serial/main.exec
 testFilesSizes=(16 32 64 128 1024 2048)
-#cilkTestFiles=(../cilk/lu_rec.exec)
+cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec )
 cilkplusTestFiles=(../cilkplus/lu_tiled.exec  ../cilkplus/lu_rec.exec )
 tiledBlockSizes=( 2 4 8 16 )
 slog="serial.log"
@@ -61,8 +61,18 @@ do
         out="${out%.exec}"
         outfile="${out//\//_}_${i%in}out"
         serialfile="serial_${i%in}out"
-        ${j} --nproc ${NTHREADS} ${i} ${outfile}
-        ${diffpath} ${serialfile} ${outfile}
+        if [[ ${j} == *tiled* ]]
+        then
+            for block_size in ${tiledBlockSizes[@]}
+            do
+                echo "Block Size:" ${block_size}
+                ${j} --nproc $NTHREADS ${i} ${outfile} ${block_size}
+                ${diffpath} ${serialfile} ${outfile}
+            done
+        else
+                ${j} --nproc $NTHREADS ${i} ${outfile}
+                ${diffpath} ${serialfile} ${outfile}
+        fi
     done
 done
 
