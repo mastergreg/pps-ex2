@@ -1,5 +1,5 @@
 CC=gcc
-CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused 
+CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused -O3
 
 
 CCFILES += lu_tiled.c lu_rec.c

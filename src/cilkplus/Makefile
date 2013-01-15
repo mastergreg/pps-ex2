@@ -3,7 +3,7 @@ CC = gcc-cilkplus
 CCFLAGS += -std=c11
 CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused -fcilkplus
 LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts
-OPT = 2
+OPT = 3
 
 ifndef DEBUG
 	DEBUG = "y"

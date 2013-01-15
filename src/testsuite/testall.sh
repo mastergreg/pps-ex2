@@ -5,7 +5,13 @@ function speedup() {
 # calculate speedup needs the line in the format "Version mat_size time" and 
 # the log filename
     size=$(echo $2 | awk '{print $2}')
-    serial=$(grep "${size}" ${1} | tail -n 1 | awk '{print $6}')
+    block_size=$(echo $2 | awk '{print $6}')
+    if [[ "x${block_size}" = "x" ]];
+    then
+        serial=$(grep "_${size}" ${1} | tail -n 1 | awk '{print $5}')
+    else
+        serial=$(grep " ${size} " ${1} | grep "Block Size: ${block_size}" | tail -n 1 | awk '{print $5}')
+    fi
     parallel=$(echo $2 | awk '{print $3}')
     echo -n "${parallel} ${serial}"
     echo -n " Speedup: "
@@ -16,9 +22,9 @@ genpathpath=../generator/generate.exec
 diffpath=../diffpy/diff.py
 #diffpath=echo
 serialpath=../serial/main.exec
-testFilesSizes=(16 32 64 128 1024 )
+testFilesSizes=(64 128 1024)
 
-tiledBlockSizes=( 2 4 8 16 )
+tiledBlockSizes=( 2 4 8 16 32 64)
 serialTiledPath=../lu/lu_tiled.exec
 cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
 cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
@@ -51,12 +57,12 @@ do
         if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
         then
             echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
-            grep "${i}" ${tslog} | tail -n 1 | tee -a ${tslog}.new
+            grep "${i}" ${tslog} | grep "Block Size: ${block_size}" |tail -n 1 | tee -a ${tslog}.new
         else
             outputline=$(${serialTiledPath} ${i} ${serialfile} ${block_size})
             if [[ $? -eq 0 ]];
             then
-                echo -n "Testfile : ${i} " | tee -a ${tslog}.new
+                echo -n "Testfile: ${i} " | tee -a ${tslog}.new
                 echo ${outputline} | tee -a ${tslog}.new
             else
                 echo ${outputline}
@@ -64,6 +70,7 @@ do
         fi
     done
 done
+
 mv ${tslog}.new ${tslog}
 
 # Non Tiled Serial
@@ -79,7 +86,7 @@ do
         outputline=$(${serialpath} ${i} ${serialfile})
         if [[ $? -eq 0 ]];
         then
-            echo -n "Testfile : ${i} " | tee -a ${slog}.new
+            echo -n "Testfile: ${i} " | tee -a ${slog}.new
             echo ${outputline} | tee -a ${slog}.new
         else
             echo ${outputline}
