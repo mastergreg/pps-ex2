@@ -2,7 +2,7 @@
 #set -e
 
 function speedup() {
-# calculate speedup needs the line in the format "Vesrion mat_size time" and 
+# calculate speedup needs the line in the format "Version mat_size time" and 
 # the log filename
     size=$(echo $2 | awk '{print $2}')
     serial=$(grep "${size}" ${1} | tail -n 1 | awk '{print $6}')
@@ -30,6 +30,7 @@ else
 fi
 
 slog="serial.log"
+tslog="tiled.log"
 errorfile="cilk.err"
 NTHREADS=4
 for i in ${testFilesSizes[@]}
@@ -54,15 +55,28 @@ then
         for block_size in ${tiledBlockSizes[@]}
         do
             serialfile="tiled_${block_size}_${i%in}out"
-            ${serialTiledPath} ${i} ${serialfile} ${block_size}
-            grep "${i}" ${slog} | tail -n 1 | tee -a ${slog}
+            inTime=$(stat -c %Y $i)
+            if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
+            then
+                echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
+                grep "${i}" ${tslog} | tail -n 1 | tee -a ${tslog}.new
+            else
+                outputline=$(${serialTiledPath} ${i} ${serialfile} ${block_size})
+                if [[ $? -eq 0 ]];
+                then
+                    echo -n "Testfile : ${i} " | tee -a ${tslog}.new
+                    echo ${outputline} | tee -a ${tslog}.new
+                else
+                    echo ${outputline}
+                fi
+            fi
         done
     done
+    mv ${tslog}.new ${tslog}
 else
     # Non Tiled Serial
     for i in ${testfiles[@]}
     do
-        out="${j//\.\.\//}"
         serialfile="serial_${i%in}out"
         inTime=$(stat -c %Y $i)
         if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
@@ -104,11 +118,11 @@ do
                 if [[ $1 -eq "1" ]]; 
                 then
                     serialfile="tiled_${block_size}_${i%in}out"
+                    echo ${j}" "${block_size} >> ${errorfile}
+                    line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
+                    echo $line
+                    speedup ${tslog} "${line}"
                 fi
-                echo ${j}" "${block_size} >> ${errorfile}
-                        line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
-                        echo $line
-                        speedup ${slog} "${line}"
                 echo -e "\n"		
                 ${diffpath} ${serialfile} ${outfile}
             done
