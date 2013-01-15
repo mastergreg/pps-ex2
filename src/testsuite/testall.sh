@@ -1,15 +1,25 @@
 #!/bin/bash
 #set -e
 
+function speedup() {
+# calculate speedup needs the line in the format "Vesrion mat_size time" and 
+# the log filename
+    size=$(echo $2 | awk '{print $2}')
+    serial=$(grep "${size}" ${1} | tail -n 1 | awk '{print $6}')
+    parallel=$(echo $2 | awk '{print $3}')
+    echo -n "Speedup: "
+    echo "${parallel} ${serial}" | awk '{ print $2/$1 }'
+}
 
 genpathpath=../generator/generate.exec
 diffpath=../diffpy/diff.py
-#diffpath=echo
+diffpath=echo
 serialpath=../serial/main.exec
 testFilesSizes=(16 32 64 128 1024 2048)
-#cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec )
-cilkTestFiles=(../cilk/lu_tiled.exec )
-cilkplusTestFiles=(../cilkplus/lu_tiled.exec  ../cilkplus/lu_rec.exec )
+cilkTestFiles=(../cilk/lu_rec.exec ../cilk/lu_tiled.exec )
+#cilkTestFiles=(../cilk/lu_tiled.exec )
+cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
+#cilkplusTestFiles=(../cilkplus/lu_tiled.exec)
 tiledBlockSizes=( 2 4 8 16 )
 slog="serial.log"
 NTHREADS=4
@@ -66,12 +76,16 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                ${j} --nproc $NTHREADS ${i} ${outfile} ${block_size}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+                echo $line
+                speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile}
             done
         else
-                ${j} --nproc $NTHREADS ${i} ${outfile}
-                ${diffpath} ${serialfile} ${outfile}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+                echo $line
+                speedup ${slog} "${line}"
+            ${diffpath} ${serialfile} ${outfile}
         fi
     done
 done
@@ -92,11 +106,15 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                ${j} ${i} ${outfile} ${block_size}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+                echo $line
+                speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile} 
             done 
         else
-                ${j} ${i} ${outfile}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+                echo $line
+                speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile} 
         fi
     done
