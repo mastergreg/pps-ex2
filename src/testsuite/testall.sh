@@ -22,6 +22,7 @@ cilkplusTestFiles=(../cilkplus/lu_rec.exec ../cilkplus/lu_tiled.exec)
 #cilkplusTestFiles=(../cilkplus/lu_tiled.exec)
 tiledBlockSizes=( 2 4 8 16 )
 slog="serial.log"
+errorfile="cilk.err"
 NTHREADS=4
 for i in ${testFilesSizes[@]}
 do
@@ -62,6 +63,7 @@ mv ${slog}.new ${slog}
 
 # Parallel execution using Cilk
 echo "============ Cilk EXECUTION =============="
+rm ${errorfile}
 for j in ${cilkTestFiles[@]}
 do
     echo $j
@@ -76,15 +78,19 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+		echo ${j}" "${block_size} >> ${errorfile}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${slog} "${line}"
+		echo -e "\n"		
                 ${diffpath} ${serialfile} ${outfile}
             done
         else
-            line=$(${j} --nproc $NTHREADS ${i} ${outfile})
+		echo ${j} >> ${errorfile}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${slog} "${line}"
+		echo -e "\n"		
             ${diffpath} ${serialfile} ${outfile}
         fi
     done
@@ -108,12 +114,14 @@ do
             do
                 line=$(${j} ${i} ${outfile} ${block_size})
                 echo $line
+		echo -e "\n"		
                 speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile} 
             done 
         else
-            line=$(${j} ${i} ${outfile})
+                line=$(${j} ${i} ${outfile} ${block_size})
                 echo $line
+		echo -e "\n"		
                 speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile} 
         fi
