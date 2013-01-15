@@ -1,7 +1,7 @@
 TARGET = USE_CILK
 CC = cilkc
 CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused
-OPT = 2
+OPT = 3
 
 ifndef DEBUG
 	DEBUG = "y"
