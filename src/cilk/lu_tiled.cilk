@@ -122,7 +122,7 @@ cilk void lu(double **a, int num_blocks, int B)
     t = get_seconds(&ts_decom);
     fprintf(stderr, "LU decomp time: %lf\n", t);
     t = get_seconds(&ts_mm);
-    fprintf(stderr, "mm updates time: %lf\n", t);
+    fprintf(stderr, "mm updates time: %lf\n\n", t);
 
     /***** Compute LU on final diagonal block *****/
     lu_kernel(a,(num_blocks-1)*B,(num_blocks-1)*B,B,B);
