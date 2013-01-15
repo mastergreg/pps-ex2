@@ -2,7 +2,7 @@ TARGET = USE_CILKPLUS
 CC = gcc-cilkplus
 CCFLAGS += -std=c11
 CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused -fcilkplus
-LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  
+LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts -lgsl -lgslcblas 
 OPT = 2
 
 ifndef DEBUG
@@ -18,7 +18,7 @@ else
 endif
 
 
-CCFILES += lu_rec.c lu_tiled.c
+CCFILES += lu_rec.c lu_tiled.c lu_tiled_gsl.c
 OBJ +=  $(patsubst %.c,%.o,$(CCFILES))
 EXECFILES +=  $(patsubst %.c,%.exec,$(CCFILES))
 DEPENDS += $(wildcard *.h) 
