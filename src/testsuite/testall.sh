@@ -82,7 +82,7 @@ do
                 ${diffpath} ${serialfile} ${outfile}
             done
         else
-                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+            line=$(${j} --nproc $NTHREADS ${i} ${outfile})
                 echo $line
                 speedup ${slog} "${line}"
             ${diffpath} ${serialfile} ${outfile}
@@ -106,13 +106,13 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+                line=$(${j} ${i} ${outfile} ${block_size})
                 echo $line
                 speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile} 
             done 
         else
-                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size})
+            line=$(${j} ${i} ${outfile})
                 echo $line
                 speedup ${slog} "${line}"
                 ${diffpath} ${serialfile} ${outfile} 
