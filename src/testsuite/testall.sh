@@ -7,7 +7,8 @@ function speedup() {
     size=$(echo $2 | awk '{print $2}')
     serial=$(grep "${size}" ${1} | tail -n 1 | awk '{print $6}')
     parallel=$(echo $2 | awk '{print $3}')
-    echo -n "Speedup: "
+    echo -n "${parallel} ${serial}"
+    echo -n " Speedup: "
     echo "${parallel} ${serial}" | awk '{ print $2/$1 }'
 }
 
@@ -19,15 +20,8 @@ testFilesSizes=(16 32 64 128 1024 )
 
 tiledBlockSizes=( 2 4 8 16 )
 serialTiledPath=../lu/lu_tiled.exec
-if [[ $1 -eq "1" ]]; 
-then
-    echo "Tiled Execution"
-    cilkTestFiles=( ../cilk/lu_tiled.exec )
-    cilkplusTestFiles=(../cilkplus/lu_tiled.exec)
-else
-    cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
-    cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
-fi
+cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
+cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
 
 slog="serial.log"
 tslog="tiled.log"
@@ -47,55 +41,52 @@ done
 
 # Serial execution
 echo "============ SERIAL EXECUTION =============="
-if [[ $1 -eq "1" ]]; 
-then
-    # Tiled Serial
-    for i in ${testfiles[@]}
+# Tiled Serial
+for i in ${testfiles[@]}
+do
+    inTime=$(stat -c %Y $i)
+    for block_size in ${tiledBlockSizes[@]}
     do
-        for block_size in ${tiledBlockSizes[@]}
-        do
-            serialfile="tiled_${block_size}_${i%in}out"
-            inTime=$(stat -c %Y $i)
-            if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
-            then
-                echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
-                grep "${i}" ${tslog} | tail -n 1 | tee -a ${tslog}.new
-            else
-                outputline=$(${serialTiledPath} ${i} ${serialfile} ${block_size})
-                if [[ $? -eq 0 ]];
-                then
-                    echo -n "Testfile : ${i} " | tee -a ${tslog}.new
-                    echo ${outputline} | tee -a ${tslog}.new
-                else
-                    echo ${outputline}
-                fi
-            fi
-        done
-    done
-    mv ${tslog}.new ${tslog}
-else
-    # Non Tiled Serial
-    for i in ${testfiles[@]}
-    do
-        serialfile="serial_${i%in}out"
-        inTime=$(stat -c %Y $i)
+        serialfile="tiled_${block_size}_${i%in}out"
         if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
         then
             echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
-            grep "${i}" ${slog} | tail -n 1 | tee -a ${slog}.new
+            grep "${i}" ${tslog} | tail -n 1 | tee -a ${tslog}.new
         else
-            outputline=$(${serialpath} ${i} ${serialfile})
+            outputline=$(${serialTiledPath} ${i} ${serialfile} ${block_size})
             if [[ $? -eq 0 ]];
             then
-                echo -n "Testfile : ${i} " | tee -a ${slog}.new
-                echo ${outputline} | tee -a ${slog}.new
+                echo -n "Testfile : ${i} " | tee -a ${tslog}.new
+                echo ${outputline} | tee -a ${tslog}.new
             else
                 echo ${outputline}
             fi
         fi
     done
-    mv ${slog}.new ${slog}
-fi
+done
+mv ${tslog}.new ${tslog}
+
+# Non Tiled Serial
+for i in ${testfiles[@]}
+do
+    serialfile="serial_${i%in}out"
+    inTime=$(stat -c %Y $i)
+    if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
+    then
+        echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
+        grep "${i}" ${slog} | tail -n 1 | tee -a ${slog}.new
+    else
+        outputline=$(${serialpath} ${i} ${serialfile})
+        if [[ $? -eq 0 ]];
+        then
+            echo -n "Testfile : ${i} " | tee -a ${slog}.new
+            echo ${outputline} | tee -a ${slog}.new
+        else
+            echo ${outputline}
+        fi
+    fi
+done
+mv ${slog}.new ${slog}
 
 
 # Parallel execution using Cilk
@@ -115,23 +106,20 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                if [[ $1 -eq "1" ]]; 
-                then
-                    serialfile="tiled_${block_size}_${i%in}out"
-                    echo ${j}" "${block_size} >> ${errorfile}
-                    line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
-                    echo $line
-                    speedup ${tslog} "${line}"
-                fi
+                serialfile="tiled_${block_size}_${i%in}out"
+                echo ${j}" "${block_size} >> ${errorfile}
+                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
+                echo $line
+                speedup ${tslog} "${line}"
                 echo -e "\n"		
                 ${diffpath} ${serialfile} ${outfile}
             done
         else
-		echo ${j} >> ${errorfile}
-                line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
-                echo $line
-                speedup ${slog} "${line}"
-		echo -e "\n"		
+            echo ${j} >> ${errorfile}
+            line=$(${j} --nproc $NTHREADS ${i} ${outfile} 2>> ${errorfile})
+            echo $line
+            speedup ${slog} "${line}"
+            echo -e "\n"		
             ${diffpath} ${serialfile} ${outfile}
         fi
     done
@@ -153,18 +141,20 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                line=$(${j} ${i} ${outfile} ${block_size})
+                serialfile="tiled_${block_size}_${i%in}out"
+                echo ${j}" "${block_size} >> ${errorfile}
+                line=$(${j} ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
-		echo -e "\n"		
-                speedup ${slog} "${line}"
-                ${diffpath} ${serialfile} ${outfile} 
-            done 
+                speedup ${tslog} "${line}"
+                echo -e "\n"		
+                ${diffpath} ${serialfile} ${outfile}
+            done
         else
-                line=$(${j} ${i} ${outfile} ${block_size})
-                echo $line
-		echo -e "\n"		
-                speedup ${slog} "${line}"
-                ${diffpath} ${serialfile} ${outfile} 
+            line=$(${j} ${i} ${outfile})
+            echo $line
+            echo -e "\n"		
+            speedup ${slog} "${line}"
+            ${diffpath} ${serialfile} ${outfile} 
         fi
     done
 done

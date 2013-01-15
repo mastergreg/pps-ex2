@@ -5,6 +5,7 @@ generator:
 	make -B DEBUG="n" -C ../generator
 serial:
 	make -B DEBUG="n" -C ../serial
+	make -B DEBUG="n" -C ../lu
 cilk:
 	make -B DEBUG="n" -C ../cilk
 cilkplus:
