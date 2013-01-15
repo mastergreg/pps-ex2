@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include "common.h"
 
 void mm(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, double ** tmp_res, int M, int N, int P, int sign);
 void mm_lower(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
@@ -21,40 +22,43 @@ void print(double ** a, int N);
 void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P);
 double ** up_res, ** low_res;
 
+
 int main(int argc, char *argv[])
 {
-	double ** A;
-	int N,B,range;
-	struct timeval ts, tf;
-	double time;
-	
-	if (argc<3) {
-		printf("Usage: ./[executable] [grid_size] [block_size]\n");
-		exit(1);
-	}
-	
-	N=atoi(argv[1]);
-	B=atoi(argv[2]);
+    double ** A;
+    int N,B,num_blocks;
+    struct timeval ts, tf;
+    double time;
 
-	if (N%B!=0 || B==1) {
-		printf("Grid must be multiple of block and greater than 1\n");
-		exit(1);
-	}
-	
-	A=allocate(N,N);
-	input(A,N,N);
-	range=N/B;
+    Matrix *mat;
+    tiled_usage(argc, argv);
 
-	low_res=allocate(B,(range-1)*B);
-	up_res=allocate((range-1)*B,B);
+    mat = get_matrix(argv[1], 0, CONTINUOUS);
+    N = mat->N;
+    A = appoint_2D(mat->A, N, N);
+    sscanf(argv[3],"%d",&B);
 
-	gettimeofday(&ts,NULL);
-	lu(A,range,B);
-	gettimeofday(&tf,NULL);
-	time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
-	printf("Tiled\t%d\t%lf\t%d\t\n", N,time,B);
-//	print(A,N);
-	return 0;
+    if (N%B!=0 || B==1) {
+        printf("\t Grid is not a multiple of Block size \n");
+        exit(0);
+    }
+
+    num_blocks=N/B;
+
+    low_res=allocate(B,(num_blocks-1)*B);
+    up_res=allocate((num_blocks-1)*B,B);
+
+    gettimeofday(&ts,NULL);
+
+    lu(A,num_blocks,B);
+
+    gettimeofday(&tf,NULL);
+    time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
+    printf("Tiled\t%d\t%lf\tBlock Size: %d\n", N,time,B);
+    upper_triangularize(N, A);
+    print_matrix_2d_to_file(argv[2], N, N, *A);
+    return 0;
+
 }
 
 /**** Tiled LU decomposition *****/
@@ -74,13 +78,14 @@ void lu(double **a, int range, int B)
 		/*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
 		for (i=k+1;i<range;i++) {
 			mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
-			mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
+            mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
 		}
 
 		/*****Update trailing blocks*****/
 		for (i=k+1;i<range;i++) {
-			for (j=k+1;j<range;j++)
+			for (j=k+1;j<range;j++){
 				mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
+            }
 		} 
 	}
 
@@ -155,10 +160,15 @@ double ** allocate(int X,int Y)
 
 void input(double ** a, int X, int Y)
 {
-	int i,j;
+	int i,j,t;
 	for (i=0;i<X;i++)
-		for (j=0;j<Y;j++)
-			a[i][j]=((double)rand()/1000000.0);
+		for (j=0;j<Y;j++){
+                t = rand();
+                while (t == 0){
+                    t = rand();
+                }
+                a[i][j]=((double)t/1000000.0);
+        }
 }
 
 void print(double ** a, int N)
@@ -166,7 +176,7 @@ void print(double ** a, int N)
 	int i,j;
 	for (i=0;i<N;i++) {
 		for (j=0;j<N;j++)
-			printf("%.2lf ",a[i][j]);
+			printf("%.6lf \n",a[i][j]);
 		printf("\n");	
 	}
 }
@@ -269,7 +279,7 @@ void rectrtri_lower(double ** a, int x_s,int y_s, int N, int M, double ** tmp_re
 	else {
 		n=N/2;
 		m=M/2;
-		rectrtri_lower(a,x_s,y_s,n,m, tmp_res);
+	    rectrtri_lower(a,x_s,y_s,n,m, tmp_res);
 		rectrtri_lower(a,x_s+n,y_s+m,N-n,M-m, tmp_res);
 		mm(a,x_s+n,y_s,a,x_s,y_s,a,x_s+n,y_s,tmp_res,N-n,m,m,0);
 		mm(a,x_s+n,y_s+m,a,x_s+n,y_s,a,x_s+n,y_s,tmp_res,N-n,M-m,m,1);	
