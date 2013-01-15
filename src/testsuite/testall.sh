@@ -1,21 +1,23 @@
 #!/bin/bash
 #set -e
 
+speedlog="speedups.log"
+
 function speedup() {
 # calculate speedup needs the line in the format "Version mat_size time" and 
 # the log filename
     size=$(echo $2 | awk '{print $2}')
     block_size=$(echo $2 | awk '{print $6}')
-    if [[ "x${block_size}" = "x" ]];
+    if [[ "x${block_size}" == "x" ]];
     then
         serial=$(grep "_${size}" ${1} | tail -n 1 | awk '{print $5}')
     else
         serial=$(grep " ${size} " ${1} | grep "Block Size: ${block_size}" | tail -n 1 | awk '{print $5}')
     fi
     parallel=$(echo $2 | awk '{print $3}')
-    echo -n "${parallel} ${serial}"
-    echo -n " Speedup: "
-    echo "${parallel} ${serial}" | awk '{ print $2/$1 }'
+    speedup=$(echo "${parallel} ${serial}" | awk '{ print $2/$1 }')
+    echo "Parallel: ${parallel} Serial: ${serial} Speedup: ${speedup}"
+    echo "${2} Serial: ${serial} Speedup: ${speedup}" >> ${speedlog}.new
 }
 
 genpathpath=../generator/generate.exec
@@ -54,12 +56,15 @@ do
     for block_size in ${tiledBlockSizes[@]}
     do
         serialfile="tiled_${block_size}_${i%in}out"
+        # define if we need to execute or not
         if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
         then
             echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
             grep "${i}" ${tslog} | grep "Block Size: ${block_size}" |tail -n 1 | tee -a ${tslog}.new
+            # print the old data and put it to the new log
         else
             outputline=$(${serialTiledPath} ${i} ${serialfile} ${block_size})
+            # generate new data and if the execution was correct put them in the log
             if [[ $? -eq 0 ]];
             then
                 echo -n "Testfile: ${i} " | tee -a ${tslog}.new
@@ -70,7 +75,7 @@ do
         fi
     done
 done
-
+# replace old log with the new one
 mv ${tslog}.new ${tslog}
 
 # Non Tiled Serial
@@ -78,12 +83,15 @@ for i in ${testfiles[@]}
 do
     serialfile="serial_${i%in}out"
     inTime=$(stat -c %Y $i)
+    # define if we need to execute or not
     if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
     then
         echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
         grep "${i}" ${slog} | tail -n 1 | tee -a ${slog}.new
+        # print the old data and put it to the new log
     else
         outputline=$(${serialpath} ${i} ${serialfile})
+        # generate new data and if the execution was correct put them in the log
         if [[ $? -eq 0 ]];
         then
             echo -n "Testfile: ${i} " | tee -a ${slog}.new
@@ -93,6 +101,7 @@ do
         fi
     fi
 done
+# replace old log with the new one
 mv ${slog}.new ${slog}
 
 
@@ -104,7 +113,7 @@ do
     echo $j
     for i in ${testfiles[@]}
     do
-        echo "Running testfile:" ${i}
+        #echo "Running testfile:" ${i}
         out="${j//\.\.\//}"
         out="${out%.exec}"
         outfile="${out//\//_}_${i%in}out"
@@ -118,7 +127,6 @@ do
                 line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${tslog} "${line}"
-                echo -e "\n"		
                 ${diffpath} ${serialfile} ${outfile}
             done
         else
@@ -126,7 +134,6 @@ do
             line=$(${j} --nproc $NTHREADS ${i} ${outfile} 2>> ${errorfile})
             echo $line
             speedup ${slog} "${line}"
-            echo -e "\n"		
             ${diffpath} ${serialfile} ${outfile}
         fi
     done
@@ -139,10 +146,10 @@ do
     echo $j
     for i in ${testfiles[@]}
     do
-        echo "Running testfile:" ${i}
+        #echo "Running testfile:" ${i}
         out="${j//\.\.\//}"
         out="${out%.exec}"
-        outfile="${out//\//_}${i%in}out"
+        outfile="${out//\//_}_${i%in}out"
         serialfile="serial_${i%in}out"
         if [[ ${j} == *tiled* ]]
         then
@@ -153,15 +160,19 @@ do
                 line=$(${j} ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${tslog} "${line}"
-                echo -e "\n"		
                 ${diffpath} ${serialfile} ${outfile}
             done
         else
             line=$(${j} ${i} ${outfile})
             echo $line
-            echo -e "\n"		
             speedup ${slog} "${line}"
             ${diffpath} ${serialfile} ${outfile} 
         fi
     done
 done
+
+
+if [[ -f ${speedlog} ]]; then
+    mv ${speedlog} ${speedlog}.$(date +%Y-%m-%d-%H-%M-%S)
+fi
+mv ${speedlog}.new ${speedlog}
