@@ -10,9 +10,9 @@ function speedup() {
     block_size=$(echo $2 | awk '{print $6}')
     if [[ "x${block_size}" == "x" ]];
     then
-        serial=$(grep "_${size}" ${1} | tail -n 1 | awk '{print $5}')
+        serial=$(awk '/_'"${size}"'/{print $5}' < ${1})
     else
-        serial=$(grep " ${size} " ${1} | grep "Block Size: ${block_size}" | tail -n 1 | awk '{print $5}')
+        serial=$(awk '/.*'" ${size} "'.*Block Size: '"${block_size}"'/ {print $5}' < ${1})
     fi
     parallel=$(echo $2 | awk '{print $3}')
     speedup=$(echo "${parallel} ${serial}" | awk '{ print $2/$1 }')
@@ -26,10 +26,12 @@ diffpath=../diffpy/diff.py
 serialpath=../serial/main.exec
 testFilesSizes=(64 128 1024)
 
-tiledBlockSizes=( 2 4 8 16 32 64)
+tiledBlockSizes=(2 4 8 16 32 64)
 serialTiledPath=../lu/lu_tiled.exec
 cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
 cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
+cilkplusTestFiles=()
+
 
 slog="serial.log"
 tslog="tiled.log"
