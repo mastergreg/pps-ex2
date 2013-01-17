@@ -19,7 +19,7 @@ int min(int x, int y)
 double ** get_inv_l(double ** a, int xs, int ys, int X, int Y);
 double ** get_inv_u(double **a, int xs, int ys, int X, int Y);
 void input(double ** a, int X, int Y);
-void lu(double ** a, int range, int B);
+void lu(double ** a, int num_blocks, int B);
 void lu_kernel(double ** a, int xs, int ys, int X, int Y);
 void print(double ** a, int N);
 void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P);
@@ -28,7 +28,7 @@ double ** up_res, ** low_res;
 int main(int argc, char *argv[])
 {
     double ** A;
-    int N,B,range;
+    int N,B,num_blocks;
     struct timeval ts, tf;
     double time;
 
@@ -45,14 +45,14 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    range=N/B;
+    num_blocks=N/B;
 
-    low_res=allocate(B,(range-1)*B);
-    up_res=allocate((range-1)*B,B);
+    low_res=allocate(B,(num_blocks-1)*B);
+    up_res=allocate((num_blocks-1)*B,B);
 
     gettimeofday(&ts,NULL);
 
-    lu(A,range,B);
+    lu(A,num_blocks,B);
 
     gettimeofday(&tf,NULL);
     time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
@@ -64,35 +64,39 @@ int main(int argc, char *argv[])
 }
 
 /**** Tiled LU decomposition *****/
-void lu(double **a, int range, int B)
+void lu(double **a, int num_blocks, int B)
 {
     int i,j,k;
     double ** l_inv, ** u_inv;
-    for (k=0; k<range-1; k++) {
+    for (k=0; k<num_blocks-1; k++) {
 
         /****Compute LU decomposition on upper left tile*****/
         lu_kernel(a,k*B,k*B,B,B);
 
         /****Compute inverted L and U matrices of upper left tile*****/
-        l_inv= get_inv_l(a,k*B,k*B,B,B);
-        u_inv= get_inv_u(a,k*B,k*B,B,B);
+        l_inv = cilk_spawn get_inv_l(a,k*B,k*B,B,B);
+        u_inv = cilk_spawn get_inv_u(a,k*B,k*B,B,B);
+        cilk_sync;
 
 
         /*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
-        for (i=k+1; i<range; i++) {
-            mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
-            mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
+        for (i=k+1; i<num_blocks; i++) {
+            cilk_spawn mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
+            cilk_spawn mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
         }
+        cilk_sync;
 
         /*****Update trailing blocks*****/
-        for (i=k+1; i<range; i++) {
-            for (j=k+1; j<range; j++)
-                mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
+        for (i=k+1; i<num_blocks; i++) {
+            for (j=k+1; j<num_blocks; j++) {
+                cilk_spawn mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
+            }
         }
+            cilk_sync;
     }
 
     /***** Compute LU on final diagonal block *****/
-    lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
+    lu_kernel(a,(num_blocks-1)*B,(num_blocks-1)*B,B,B);
 
 }
 
@@ -270,8 +274,9 @@ void rectrtri_lower(double ** a, int x_s,int y_s, int N, int M, double ** tmp_re
     else {
         n=N/2;
         m=M/2;
-        rectrtri_lower(a,x_s,y_s,n,m, tmp_res);
-        rectrtri_lower(a,x_s+n,y_s+m,N-n,M-m, tmp_res);
+        cilk_spawn rectrtri_lower(a,x_s,y_s,n,m, tmp_res);
+        cilk_spawn rectrtri_lower(a,x_s+n,y_s+m,N-n,M-m, tmp_res);
+        cilk_sync;
         mm(a,x_s+n,y_s,a,x_s,y_s,a,x_s+n,y_s,tmp_res,N-n,m,m,0);
         mm(a,x_s+n,y_s+m,a,x_s+n,y_s,a,x_s+n,y_s,tmp_res,N-n,M-m,m,1);
     }
@@ -287,8 +292,9 @@ void rectrtri_upper(double ** a, int x_s,int y_s, int N, int M, double ** tmp_re
         n=N/2;
         m=M/2;
 
-        rectrtri_upper(a,x_s,y_s,n,m, tmp_res);
-        rectrtri_upper(a,x_s+n,y_s+m,N-n,M-m, tmp_res);
+        cilk_spawn rectrtri_upper(a,x_s,y_s,n,m, tmp_res);
+        cilk_spawn rectrtri_upper(a,x_s+n,y_s+m,N-n,M-m, tmp_res);
+        cilk_sync;
         mm(a,x_s,y_s+m,a,x_s+n,y_s+m,a,x_s,y_s+m,tmp_res,n,M-m,M-m,0);
         mm(a,x_s,y_s,a,x_s,y_s+m,a,x_s,y_s+m,tmp_res, n,m,M-m,1);
     }
