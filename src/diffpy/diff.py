@@ -4,13 +4,18 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : diff.py
 # Creation Date : 06-11-2012
-# Last Modified : Fri 23 Nov 2012 08:35:30 PM EET
+# Last Modified : Mon 21 Jan 2013 10:54:53 AM EET
 # Created By : Greg Liras <gregliras@gmail.com>
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from __future__ import print_function
 from sys import argv
-from termcolor import colored
+
+try:
+    from termcolor import colored
+except:
+    def colored(st, c):
+        return "\033[0;34m{0}\033[0m".format(st)
 
 def help():
     print("""Usage: {0} <file1> <file2>""".format(argv[0]))

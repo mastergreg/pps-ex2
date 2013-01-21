@@ -21,16 +21,15 @@ function speedup() {
 }
 
 genpathpath=../generator/generate.exec
-diffpath=../diffpy/diff.py
-#diffpath=echo
+diffcmd='pypy ../diffpy/diff.py'
+#diffcmd=echo
 serialpath=../serial/main.exec
-testFilesSizes=(64 128 1024)
+testFilesSizes=(64 128 1024 2048)
 
 tiledBlockSizes=(2 4 8 16 32 64)
 serialTiledPath=../lu/lu_tiled.exec
 cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
 cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
-cilkplusTestFiles=()
 
 
 slog="serial.log"
@@ -129,14 +128,14 @@ do
                 line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${tslog} "${line}"
-                ${diffpath} ${serialfile} ${outfile}
+                ${diffcmd} ${serialfile} ${outfile}
             done
         else
             echo ${j} >> ${errorfile}
             line=$(${j} --nproc $NTHREADS ${i} ${outfile} 2>> ${errorfile})
             echo $line
             speedup ${slog} "${line}"
-            ${diffpath} ${serialfile} ${outfile}
+            ${diffcmd} ${serialfile} ${outfile}
         fi
     done
 done
@@ -162,13 +161,13 @@ do
                 line=$(${j} ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${tslog} "${line}"
-                ${diffpath} ${serialfile} ${outfile}
+                ${diffcmd} ${serialfile} ${outfile}
             done
         else
             line=$(${j} ${i} ${outfile})
             echo $line
             speedup ${slog} "${line}"
-            ${diffpath} ${serialfile} ${outfile} 
+            ${diffcmd} ${serialfile} ${outfile} 
         fi
     done
 done
