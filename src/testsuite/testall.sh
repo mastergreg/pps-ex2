@@ -164,7 +164,8 @@ do
                 ${diffcmd} ${serialfile} ${outfile}
             done
         else
-            line=$(${j} ${i} ${outfile})
+            echo ${j} >> ${errorfile}
+            line=$(${j} ${i} ${outfile} 2>> ${errorfile})
             echo $line
             speedup ${slog} "${line}"
             ${diffcmd} ${serialfile} ${outfile} 
