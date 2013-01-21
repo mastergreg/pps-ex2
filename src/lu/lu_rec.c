@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <omp.h>
+#include "common.h"
 
 /* Define the size of a block. */
 #define BLOCK 16
@@ -29,15 +30,14 @@ int main(int argc, char *argv[])
         int N;
         struct timeval ts, tf;
         double time;
+    Matrix *mat;
 
-	if (argc<2) {
-		printf("Usage: ./[executable] [grid_size]\n");
-		exit(1);
-	}
+    usage(argc, argv);
 
-        N=atoi(argv[1]);
-        A=allocate(N,N);
-        input(A,N,N);
+    mat = get_matrix(argv[1], 0, CONTINUOUS);
+    N = mat->N;
+    A = appoint_2D(mat->A, N, N);
+
 
         gettimeofday(&ts,NULL);
 
@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
 
         printf("Recursive\t%d\t%lf\n", N,time);
 //      print(A,N);
+    upper_triangularize(N, A);
+    print_matrix_2d_to_file(argv[2], N, N, *A);
         return 0;
 }
 
