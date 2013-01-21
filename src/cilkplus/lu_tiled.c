@@ -80,25 +80,63 @@ void lu(double **a, int num_blocks, int B)
 
 
         /*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
-        for (i=k+1; i<num_blocks; i++) {
-            cilk_spawn mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
-            cilk_spawn mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
-        }
-        cilk_sync;
+        for_spawn_mm(k+1, num_blocks-1, k, num_blocks, a, l_inv, u_inv, B);
 
         /*****Update trailing blocks*****/
-        for (i=k+1; i<num_blocks; i++) {
-            for (j=k+1; j<num_blocks; j++) {
-                cilk_spawn mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
-            }
-        }
-            cilk_sync;
+        for_spawn_updates(k+1, num_blocks-1, k, num_blocks, a, B);
+        cilk_sync;
     }
 
     /***** Compute LU on final diagonal block *****/
     lu_kernel(a,(num_blocks-1)*B,(num_blocks-1)*B,B,B);
 
 }
+
+void for_spawn_mm(int i, int stop, int k, int num_blocks, double **a, double **l_inv, double **u_inv, int B)
+{
+    int current_range;
+
+    current_range = stop - i;
+    if(current_range > 0) {
+        cilk_spawn for_spawn_mm(i, i + current_range / 2, k, num_blocks, a, l_inv, u_inv, B);
+        cilk_spawn for_spawn_mm(i + current_range / 2 + 1, stop, k, num_blocks, a, l_inv, u_inv, B);
+    }
+    else if (current_range == 0) {
+        cilk_spawn mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
+        cilk_spawn mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
+    }
+}
+
+void for_spawn_inner_updates(int start, int stop, int k, int num_blocks, int i, double **a, int B)
+{
+    int current_range;
+
+    current_range = stop - start;
+    if(current_range > 0) {
+        cilk_spawn for_spawn_inner_updates(start, start + current_range / 2, k, num_blocks, i, a, B);
+        cilk_spawn for_spawn_inner_updates(start + current_range / 2 + 1, stop, k, num_blocks, i, a, B);
+    }
+    else if (current_range == 0) {
+        cilk_spawn mm_update(a,i*B,k*B,a,k*B,start*B,a,i*B,start*B,B,B,B);
+    }
+}
+
+void for_spawn_updates(int i, int stop, int k, int num_blocks, double **a, int B)
+{
+    int current_range;
+
+    current_range = stop - i;
+    if(current_range > 0) {
+        cilk_spawn for_spawn_updates(i, i + current_range / 2, k, num_blocks, a, B);
+        cilk_spawn for_spawn_updates(i + current_range / 2 + 1, stop, k, num_blocks, a, B);
+    }
+    else if (current_range == 0) {
+        cilk_spawn for_spawn_inner_updates(k+1, num_blocks-1, k, num_blocks, i, a, B);
+    }
+}
+
+
+
 
 /***** Baseline LU Kernel *****/
 void lu_kernel(double ** a, int xs,int ys, int X, int Y)
