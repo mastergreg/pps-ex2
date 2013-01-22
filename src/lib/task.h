@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.h
 * Creation Date : 09-01-2013
-* Last Modified : Tue 22 Jan 2013 03:01:28 PM EET
+* Last Modified : Tue 22 Jan 2013 03:48:30 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 #ifndef TASK_H 
@@ -27,7 +27,8 @@ struct task_node {
     uint32_t id;
     uint32_t children_count;
     uint32_t *children;
-    volatile gint lock;
+    //volatile gint lock;
+    GMutex  lock;
     uint32_t dependencies_count;
     struct_task *mtask;
 };

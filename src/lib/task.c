@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.c
 * Creation Date : 09-01-2013
-* Last Modified : Tue 22 Jan 2013 03:13:41 PM EET
+* Last Modified : Tue 22 Jan 2013 04:00:34 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 
@@ -17,7 +17,7 @@ static uint32_t ready_tasks[MAX_TASKS];
 static uint32_t ready_tasks_count = 0;
 
 
-cilk void execute(struct_task *t, int id)
+void execute(struct_task *t, int id)
 {
     *t->value = (*t->func)(t->args, id);
 }
@@ -75,11 +75,39 @@ void del_task(uint32_t id)
 }
 
 
+void set_locks(struct_task_node *TASK_GRAPH, unsigned int N)
+{
+    int i;
+    for(i = 0; i < N; ++i) {
+        TASK_GRAPH[i].lock = g_mutex_new();
+    }
+}
+
+void get_lock(struct_task_node *tn)
+{
+    g_mutex_lock(tn->lock);
+}
+
+void release_lock(struct_task_node *tn)
+{
+    g_mutex_unlock(tn->lock);
+}
+
+
 cilk execute_node(struct_task_node *tn)
 {
-    spawn execute(tn->mtask, tn->id);
+    int i;
+    struct_task_node *child;
+
+    execute(tn->mtask, tn->id);
+
+    for(i = 0; i < tn->children_count; +++) {
+        child = tn->children[i];
+        get_lock(child);
+        if(--(child->dependencies_count) == 0) {
+            spawn execute_node(child);
+        }
+        release_lock(child);
+    }
     sync;
-
-    gint l = g_atomic_int_get(tn->lock);
-
 }
