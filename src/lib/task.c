@@ -1,11 +1,12 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.c
 * Creation Date : 09-01-2013
-* Last Modified : Fri 11 Jan 2013 12:11:36 AM EET
+* Last Modified : Tue 22 Jan 2013 04:00:34 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 
 #include "task.h"
+#include <glib.h>
 
 static struct_task task_array[MAX_TASKS];
 static task_node task_nodes_array[MAX_TASKS];
@@ -16,7 +17,7 @@ static uint32_t ready_tasks[MAX_TASKS];
 static uint32_t ready_tasks_count = 0;
 
 
-cilk void execute(struct_task *t, int id)
+void execute(struct_task *t, int id)
 {
     *t->value = (*t->func)(t->args, id);
 }
@@ -37,7 +38,7 @@ cilk void run_task(uint32_t id)
 
 
 
-void initialize(void)
+void tasks_initialize(void)
 {
     int i;
     for(i = 0; i < MAX_TASKS; i++) {
@@ -71,4 +72,42 @@ void del_task(uint32_t id)
         free_tasks_next--;
         free_tasks[free_tasks_next] = id;
     }
+}
+
+
+void set_locks(struct_task_node *TASK_GRAPH, unsigned int N)
+{
+    int i;
+    for(i = 0; i < N; ++i) {
+        TASK_GRAPH[i].lock = g_mutex_new();
+    }
+}
+
+void get_lock(struct_task_node *tn)
+{
+    g_mutex_lock(tn->lock);
+}
+
+void release_lock(struct_task_node *tn)
+{
+    g_mutex_unlock(tn->lock);
+}
+
+
+cilk execute_node(struct_task_node *tn)
+{
+    int i;
+    struct_task_node *child;
+
+    execute(tn->mtask, tn->id);
+
+    for(i = 0; i < tn->children_count; +++) {
+        child = tn->children[i];
+        get_lock(child);
+        if(--(child->dependencies_count) == 0) {
+            spawn execute_node(child);
+        }
+        release_lock(child);
+    }
+    sync;
 }

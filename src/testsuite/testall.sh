@@ -21,20 +21,27 @@ function speedup() {
 }
 
 genpathpath=../generator/generate.exec
-diffpath=../diffpy/diff.py
-#diffpath=echo
+if [ -x pypy ];
+then
+    diffcmd='pypy ../diffpy/diff.py'
+else
+    diffcmd='../diffpy/diff.py'
+fi
+#diffcmd=echo
 serialpath=../serial/main.exec
-testFilesSizes=(64 128 1024)
+#testFilesSizes=(64 128 1024 2048)
+testFilesSizes=(64 128 1024 2048)
 
 tiledBlockSizes=(2 4 8 16 32 64)
 serialTiledPath=../lu/lu_tiled.exec
+serialRecPath=../lu/lu_rec.exec
 cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
 cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
-cilkplusTestFiles=()
 
 
 slog="serial.log"
-tslog="tiled.log"
+tslog="serial_tiled.log"
+rslog="serial_rec.log"
 errorfile="cilk.err"
 NTHREADS=4
 for i in ${testFilesSizes[@]}
@@ -51,13 +58,14 @@ done
 
 # Serial execution
 echo "============ SERIAL EXECUTION =============="
+rm -f ${tslog}.new
 # Tiled Serial
 for i in ${testfiles[@]}
 do
     inTime=$(stat -c %Y $i)
     for block_size in ${tiledBlockSizes[@]}
     do
-        serialfile="tiled_${block_size}_${i%in}out"
+        serialfile="serial_tiled_${block_size}_${i%in}out"
         # define if we need to execute or not
         if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
         then
@@ -80,7 +88,36 @@ done
 # replace old log with the new one
 mv ${tslog}.new ${tslog}
 
+# Rec Serial
+rm -f ${rslog}.new
+for i in ${testfiles[@]}
+do
+    serialfile="serial_rec_${i%in}out"
+    inTime=$(stat -c %Y $i)
+    # define if we need to execute or not
+    if [[ -f ${serialfile} && $(stat -c %Y ${serialfile}) -gt ${inTime} ]];
+    then
+        echo "Outfile <${serialfile}> created after infile <${i}>, not executing."
+        grep "${i}" ${rslog} | tail -n 1 | tee -a ${rslog}.new
+        # print the old data and put it to the new log
+    else
+        outputline=$(${serialRecPath} ${i} ${serialfile})
+        # generate new data and if the execution was correct put them in the log
+        if [[ $? -eq 0 ]];
+        then
+            echo -n "Testfile: ${i} " | tee -a ${rslog}.new
+            echo ${outputline} | tee -a ${rslog}.new
+        else
+            echo ${outputline}
+        fi
+    fi
+done
+# replace old log with the new one
+mv ${rslog}.new ${rslog}
+
+
 # Non Tiled Serial
+rm -f ${slog}.new
 for i in ${testfiles[@]}
 do
     serialfile="serial_${i%in}out"
@@ -124,19 +161,19 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                serialfile="tiled_${block_size}_${i%in}out"
+                serialfile="serial_tiled_${block_size}_${i%in}out"
                 echo ${j}" "${block_size} >> ${errorfile}
                 line=$(${j} --nproc $NTHREADS ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${tslog} "${line}"
-                ${diffpath} ${serialfile} ${outfile}
+                ${diffcmd} ${serialfile} ${outfile}
             done
         else
             echo ${j} >> ${errorfile}
             line=$(${j} --nproc $NTHREADS ${i} ${outfile} 2>> ${errorfile})
             echo $line
-            speedup ${slog} "${line}"
-            ${diffpath} ${serialfile} ${outfile}
+            speedup ${rslog} "${line}"
+            ${diffcmd} ${serialfile} ${outfile}
         fi
     done
 done
@@ -157,18 +194,19 @@ do
         then
             for block_size in ${tiledBlockSizes[@]}
             do
-                serialfile="tiled_${block_size}_${i%in}out"
+                serialfile="serial_tiled_${block_size}_${i%in}out"
                 echo ${j}" "${block_size} >> ${errorfile}
                 line=$(${j} ${i} ${outfile} ${block_size} 2>> ${errorfile})
                 echo $line
                 speedup ${tslog} "${line}"
-                ${diffpath} ${serialfile} ${outfile}
+                ${diffcmd} ${serialfile} ${outfile}
             done
         else
-            line=$(${j} ${i} ${outfile})
+            echo ${j} >> ${errorfile}
+            line=$(${j} ${i} ${outfile} 2>> ${errorfile})
             echo $line
-            speedup ${slog} "${line}"
-            ${diffpath} ${serialfile} ${outfile} 
+            speedup ${rslog} "${line}"
+            ${diffcmd} ${serialfile} ${outfile} 
         fi
     done
 done
