@@ -21,7 +21,12 @@ function speedup() {
 }
 
 genpathpath=../generator/generate.exec
-diffcmd='pypy ../diffpy/diff.py'
+if [ -x pypy ];
+then
+    diffcmd='pypy ../diffpy/diff.py'
+else
+    diffcmd='../diffpy/diff.py'
+fi
 #diffcmd=echo
 serialpath=../serial/main.exec
 #testFilesSizes=(64 128 1024 2048)

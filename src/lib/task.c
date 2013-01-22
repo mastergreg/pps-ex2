@@ -1,11 +1,12 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.c
 * Creation Date : 09-01-2013
-* Last Modified : Fri 11 Jan 2013 12:11:36 AM EET
+* Last Modified : Tue 22 Jan 2013 03:13:41 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 
 #include "task.h"
+#include <glib.h>
 
 static struct_task task_array[MAX_TASKS];
 static task_node task_nodes_array[MAX_TASKS];
@@ -37,7 +38,7 @@ cilk void run_task(uint32_t id)
 
 
 
-void initialize(void)
+void tasks_initialize(void)
 {
     int i;
     for(i = 0; i < MAX_TASKS; i++) {
@@ -71,4 +72,14 @@ void del_task(uint32_t id)
         free_tasks_next--;
         free_tasks[free_tasks_next] = id;
     }
+}
+
+
+cilk execute_node(struct_task_node *tn)
+{
+    spawn execute(tn->mtask, tn->id);
+    sync;
+
+    gint l = g_atomic_int_get(tn->lock);
+
 }
