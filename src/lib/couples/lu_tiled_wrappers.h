@@ -1,30 +1,32 @@
 #include <stdlib.h>
 
-double ** l_inv;
-double ** u_inv;
-
 struct diag_node_params {
-    double **a;
+    double ***a;
+    int *** u_inv;
+    int *** l_inv;
     int B;
     int k;
 }
 
 struct LU_node_params {
-    double **a;
+    double ***a;
+    int *** u_inv;
+    int *** l_inv;
     int B;
     int k;
     int i; // Node's index
 }
 
 struct updating_node_params {
-    double **a;
+    double ***a;
     int B;
     int k;
-    int i; // Node's index
+    int i; 
+    int j; 
 }
 
 struct final_node_params {
-    double **a;
+    double ***a;
     int B;
     int range;
 }

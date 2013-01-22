@@ -2,7 +2,7 @@
 
 void diag_node_wrapper(struct diag_node_params params)
 {
-    double ** a = params.a;
+    double ** a = (params.a)*;
     int k = params.k;
     int B = params.B;
 
@@ -13,7 +13,7 @@ void diag_node_wrapper(struct diag_node_params params)
 
 void upper_node_wrapper(struct LU_node_params params)
 {
-    double ** a = params.a;
+    double ** a = (params.a)*;
     int k = params.k;
     int B = params.B;
     int i = params.i;
@@ -22,7 +22,7 @@ void upper_node_wrapper(struct LU_node_params params)
 
 void lower_node_wrapper(struct LU_node_params params)
 {
-    double ** a = params.a;
+    double ** a = (params.a)*;
     int k = params.k;
     int B = params.B;
     int i = params.i;
@@ -31,7 +31,7 @@ void lower_node_wrapper(struct LU_node_params params)
 
 void update_node_wrapper(struct updating_node_params params)
 {
-    double ** a = params.a;
+    double ** a = (params.a)*;
     int k = params.k;
     int B = params.B;
     int i = params.i;
@@ -42,7 +42,7 @@ void update_node_wrapper(struct updating_node_params params)
 
 void final_node_wrapper(struct final_node_params params)
 {
-    double ** a = params.a;
+    double ** a = (params.a)*;
     int B = params.B;
     int range = params.range;
     lu_kernel(a, (range-1)*B, (range-1)*B, B, B);
