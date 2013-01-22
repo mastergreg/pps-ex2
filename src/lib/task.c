@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.c
 * Creation Date : 09-01-2013
-* Last Modified : Tue 22 Jan 2013 04:00:34 PM EET
+* Last Modified : Tue 22 Jan 2013 07:35:29 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 
@@ -22,7 +22,7 @@ void execute(struct_task *t, int id)
     *t->value = (*t->func)(t->args, id);
 }
 
-cilk struct_task * set_task(void *func, void *args)
+struct_task * set_task(void *func, void *args)
 {
     struct_task *t = malloc(sizeof(struct task));
     t -> func = func;
@@ -103,11 +103,9 @@ cilk execute_node(struct_task_node *tn)
 
     for(i = 0; i < tn->children_count; +++) {
         child = tn->children[i];
-        get_lock(child);
-        if(--(child->dependencies_count) == 0) {
+        if(g_atomic_int_dec_and_test(&(child->dependencies_count))) {
             spawn execute_node(child);
         }
-        release_lock(child);
     }
     sync;
 }

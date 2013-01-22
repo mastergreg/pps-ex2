@@ -1,3 +1,6 @@
+#ifndef LU_TILED_WRAPPERS_H
+#define LU_TILED_WRAPPERS_H
+
 #include <stdlib.h>
 
 struct diag_node_params {
@@ -36,3 +39,4 @@ void lower_node_wrapper(struct LU_node_params params);
 void diag_node_wrapper(struct LU_node_params params);
 void update_node_wrapper(struct updating_node_params params);
 void final_node_wrapper(struct final_node_params params);
+#endif /* LU_TILED_WRAPPERS_H */

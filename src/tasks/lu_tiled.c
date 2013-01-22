@@ -7,21 +7,9 @@
 #include "common.h"
 
 #include "task_config.h"
+#include "lu_tiled.h"
+#include "lu_tiled_wrappers.h"
 
-void mm(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, double ** tmp_res, int M, int N, int P, int sign);
-void mm_lower(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
-void mm_upper(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
-void rectrtri_lower(double ** a, int x_s,int y_s, int N, int M, double ** tmp_res);
-void rectrtri_upper(double ** a, int x_s, int y_s, int N, int M, double ** tmp_res);
-double ** allocate(int X, int Y);
-int min(int x, int y) {return x<y?x:y; }
-double ** get_inv_l(double ** a, int xs, int ys, int X, int Y);
-double ** get_inv_u(double **a, int xs, int ys, int X, int Y);
-void input(double ** a, int X, int Y);
-void lu(double ** a, int range, int B);
-void lu_kernel(double ** a, int xs, int ys, int X, int Y);
-void print(double ** a, int N);
-void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P);
 double ** up_res, ** low_res;
 
 
@@ -68,31 +56,81 @@ void lu(double **a, int range, int B)
 {
 	int i,j,k;
 	double ** l_inv, ** u_inv;
+    double *** l_inv_arrs = malloc(sizeof(double **)*range);
+    double *** u_inv_arrs = malloc(sizeof(double **)*range);
+
+    struct diag_node_params *lu_p;
+    struct LU_node_params *lu_node_p;
+    struct updating_node_params *upd_node_p;
+    struct final_node_params *fnp;
+    int node_counter = 0;
 	for (k=0;k<range-1;k++) {
 
 		/****Compute LU decomposition on upper left tile*****/
-		lu_kernel(a,k*B,k*B,B,B);
 
-		/****Compute inverted L and U matrices of upper left tile*****/
-		l_inv=get_inv_l(a,k*B,k*B,B,B);
-		u_inv=get_inv_u(a,k*B,k*B,B,B);
+        lu_p = malloc(sizeof(struct diag_node_params));
+        lu_p->a = a;
+        lu_p->k = k;
+        lu_p->B = B;
+        lu_p->u_inv = &(u_inv_arrs[k]);
+        lu_p->l_inv = &(l_inv_arrs[k]);
+
+        TASK_GRAPH_A[node_counter++]->mtask = set_task(diag_node_wrapper, (void *) lu_p);
+        
+        
+		//lu_kernel(a,k*B,k*B,B,B);
+
+		///****Compute inverted L and U matrices of upper left tile*****/
+		//l_inv_arrs[k]=get_inv_l(a,k*B,k*B,B,B);
+		//u_inv_arrs[k]=get_inv_u(a,k*B,k*B,B,B);
 
 		/*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
 		for (i=k+1;i<range;i++) {
-			mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
-            mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
-		}
+            lu_node_p = malloc(sizeof(struct LU_node_params));
+            lu_node_p->a = a;
+            lu_node_p->k = k;
+            lu_node_p->B = B;
+            lu_node_p->u_inv = &(u_inv_arrs[k]);
+            lu_node_p->l_inv = &(l_inv_arrs[k]);
+            lu_node_p->i = i;
+            TASK_GRAPH_A[node_counter++]->mtask = set_task(upper_node_wrapper, (void *) lu_node_p);
+            //mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
+        }
+        for (i=k+1;i<range;i++) {
+            lu_node_p = malloc(sizeof(struct LU_node_params));
+            lu_node_p->a = a;
+            lu_node_p->k = k;
+            lu_node_p->B = B;
+            lu_node_p->u_inv = &(u_inv_arrs[k]);
+            lu_node_p->l_inv = &(l_inv_arrs[k]);
+            lu_node_p->i = i;
+            TASK_GRAPH_A[node_counter++]->mtask = set_task(lower_node_wrapper, (void *) lu_node_p);
+            //mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
+        }
 
-		/*****Update trailing blocks*****/
-		for (i=k+1;i<range;i++) {
-			for (j=k+1;j<range;j++){
-				mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
+        /*****Update trailing blocks*****/
+        for (i=k+1;i<range;i++) {
+            for (j=k+1;j<range;j++){
+                upd_node_p = malloc(sizeof(struct LU_node_params));
+                upd_node_p->a = a;
+                upd_node_p->k = k;
+                upd_node_p->B = B;
+                upd_node_p->i = i;
+                upd_node_p->j = j;
+                TASK_GRAPH_A[node_counter++]->mtask = set_task(update_node_wrapper, (void *) upd_node_p);
+				//mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
             }
 		} 
 	}
 
 	/***** Compute LU on final diagonal block *****/
-	lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
+    fnp = malloc(sizeof(struct final_node_params));
+    fnp->a = a;
+    fnp->B = B;
+    fnp->range = range;
+
+    TASK_GRAPH_A[node_counter++]->mtask = set_task(final_node_wrapper, (void *) fnp);
+	//lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
 
 }
 

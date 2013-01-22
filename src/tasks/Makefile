@@ -1,8 +1,6 @@
-TARGET = USE_CILKPLUS
+TARGET = USE_CILK
 CC = gcc-cilkplus
-CCFLAGS += -std=c11
-CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused -fcilkplus
-LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts
+CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused
 OPT = 3
 
 ifndef DEBUG
@@ -11,26 +9,26 @@ endif
 
 ifeq ($(DEBUG),"y")
 	CCFLAGS += -D$(TARGET)_DEBUG=1 -D$(TARGET)
-	CCFLAGS += -g -O1 -pg
+	CCFLAGS += -g -O0 
 else
-	CCFLAGS += -D$(TARGET)_DEBUG=0 -D$(TARGET)
+	CCFLAGS += -Dset$(TARGET)_DEBUG=0 -D$(TARGET)
 	CCFLAGS += -O$(OPT)
 endif
 
 
-CCFILES += lu_tiled.c
-OBJ +=  $(patsubst %.c,%.o,$(CCFILES))
-EXECFILES +=  $(patsubst %.c,%.exec,$(CCFILES))
-DEPENDS += $(wildcard *.h)
+CCFILES += lu_tiled.cilk
+OBJ +=  $(patsubst %.cilk,%.o,$(CCFILES))
+EXECFILES +=  $(patsubst %.cilk,%.exec,$(CCFILES))
+DEPENDS += $(wildcard *.h) 
 
 
 all: $(EXECFILES)
 
-%.exec:	%.o common.o task.c
-	$(CC) $(CCFLAGS) $^ $(LDFLAGS) -o $@
+%.exec:	%.o common.o
+	$(CC) $(CCFLAGS) $^ -o $@
 
-%.o:	%.c
-	$(CC) $< -c $(CCFLAGS) -o $@
+%.o:	%.cilk
+	$(CC) -c $(CCFLAGS) $< -o $@
 
 
 .PHONY:	clean all indent tags

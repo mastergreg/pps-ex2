@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task_config.h
 * Creation Date : 22-01-2013
-* Last Modified : Tue 22 Jan 2013 03:51:08 PM EET
+* Last Modified : Tue 22 Jan 2013 06:43:19 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 #ifndef TASK_CONFIG
@@ -10,7 +10,6 @@ _._._._._._._._._._._._._._._._._._._._._.*/
 #include "task.h"
 
 struct_task_node TASK_GRAPH_A[48];
-static atomic int TASK_LOCKS[48];
 
 
 /* K = 0 */
