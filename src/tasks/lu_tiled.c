@@ -32,16 +32,28 @@ void execute_node(struct_task_node *TASK_GRAPH, int id)
     int i;
     struct_task_node *child;
 
+    /* DEBUG */
+    if (tn->dependencies_count!=0) {
+        printf("  WARNING: dependencies count for node %d is %d before execute\n", \ 
+                                tn->id, tn->dependencies_count);
+    }
+    /* /DEBUG */
 
     execute(tn->mtask, tn->id);
 
-//    debug("%d %d %d\n", tn->id, tn->children_count, tn->dependencies_count);
+    /* DEBUG */
+    if (tn->dependencies_count!=0) {
+        printf("  WARNING: dependencies count for node %d is %d after execute\n", \ 
+                                tn->id, tn->dependencies_count);
+    }
+    /* /DEBUG */
 
 
     for(i = 0; i < tn->children_count; ++i) {
-//        debug("%d\n", tn->children[i]);
         child = &(TASK_GRAPH[tn->children[i]]);
         if(g_atomic_int_dec_and_test(&(child->dependencies_count))) {
+            printf("Node %d: dependencies_count is now %d\n", \ 
+                                    child->id, child->dependencies_count );
             cilk_spawn execute_node(TASK_GRAPH, child->id);
         }
     }
