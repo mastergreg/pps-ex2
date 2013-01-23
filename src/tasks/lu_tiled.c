@@ -173,6 +173,7 @@ void lu(double **a, int range, int B)
             }
         }
     }
+    printf("%d\n", node_counter);
 
     /***** Compute LU on final diagonal block *****/
     fnp = malloc(sizeof(struct final_node_params));
@@ -180,6 +181,7 @@ void lu(double **a, int range, int B)
     fnp->B = B;
     fnp->range = range;
 
+    printf("%d\n", node_counter);
     TASK_GRAPH_A[node_counter++].mtask = set_task(final_node_wrapper, (void *) fnp);
     //lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
 
