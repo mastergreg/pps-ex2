@@ -98,24 +98,24 @@ struct_task_node TASK_GRAPH_A[29] = {
         .children =  (unsigned int []) { 17, 18, 19, 20 }
     },
     {
-        .id = 17, .children_count = 4,
+        .id = 17, .children_count = 2,
         .dependencies_count = 2, .lock = NULL, .mtask = NULL,
-        .children =  (unsigned int []) { 21, 22, 23, 24 }
+        .children =  (unsigned int []) { 21, 23 }
     },
     {
-        .id = 18, .children_count = 4,
+        .id = 18, .children_count = 2,
         .dependencies_count = 2, .lock = NULL, .mtask = NULL,
-        .children =  (unsigned int []) { 21, 22, 23, 24 }
+        .children =  (unsigned int []) { 22, 24 }
     },
     {
-        .id = 19, .children_count = 4,
+        .id = 19, .children_count = 2,
         .dependencies_count = 2, .lock = NULL, .mtask = NULL,
-        .children =  (unsigned int []) { 21, 22, 23, 24 }
+        .children =  (unsigned int []) { 21, 22, }
     },
     {
-        .id = 20, .children_count = 4,
+        .id = 20, .children_count = 2,
         .dependencies_count = 2, .lock = NULL, .mtask = NULL,
-        .children =  (unsigned int []) { 21, 22, 23, 24 }
+        .children =  (unsigned int []) { 23, 24 }
     },
     {
         .id = 21, .children_count = 1,
