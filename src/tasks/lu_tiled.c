@@ -32,15 +32,26 @@ void execute_node(struct_task_node *TASK_GRAPH, int id)
     int i;
     struct_task_node *child;
 
+     execute(tn->mtask, tn->id);
 
-    execute(tn->mtask, tn->id);
-
-//    debug("%d %d %d\n", tn->id, tn->children_count, tn->dependencies_count);
+    /* DEBUG */
+    if (tn->dependencies_count!=0) {
+        printf("  CONCURRENCY ISSUE: Node %d: dependencies count is %d after execute\n", tn->id, tn->dependencies_count);
+    }
+    /* /DEBUG */
 
 
     for(i = 0; i < tn->children_count; ++i) {
-//        debug("%d\n", tn->children[i]);
         child = &(TASK_GRAPH[tn->children[i]]);
+        
+        
+        /* DEBUG */
+        if (child->dependencies_count < 1) {
+            printf("  CONCURRENCY ISSUE Node %d: parent %d wants to decrease my dependencies_count from %d\n" ,child->id, tn->id, child->dependencies_count);
+        }
+        /* /DEBUG */
+        
+
         if(g_atomic_int_dec_and_test(&(child->dependencies_count))) {
             cilk_spawn execute_node(TASK_GRAPH, child->id);
         }
@@ -60,20 +71,20 @@ int main(int argc, char *argv[])
     double time;
 
     Matrix *mat;
-    tiled_usage(argc, argv);
+    //tiled_usage(argc, argv);
 
     mat = get_matrix(argv[1], 0, CONTINUOUS);
     N = mat->N;
     A = appoint_2D(mat->A, N, N);
-    sscanf(argv[3],"%d",&B);
+
+    /* Since we have de facto 4 blocks, block size shouldnt be custom */
+    num_blocks = 4;
+    B = N/num_blocks;
 
     if (N%B!=0 || B==1) {
         debug("\t Grid is not a multiple of Block size \n");
         exit(0);
     }
-
-    //num_blocks=N/B;
-    num_blocks = 4;
 
     low_res=allocate(B,(num_blocks-1)*B);
     up_res=allocate((num_blocks-1)*B,B);
@@ -89,7 +100,6 @@ int main(int argc, char *argv[])
     upper_triangularize(N, A);
     print_matrix_2d_to_file(argv[2], N, N, *A);
     return 0;
-
 }
 
 /**** Tiled LU decomposition *****/
