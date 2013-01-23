@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task_config.h
 * Creation Date : 22-01-2013
-* Last Modified : Wed 23 Jan 2013 01:06:16 PM EET
+* Last Modified : Wed 23 Jan 2013 03:59:41 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 #ifndef TASK_CONFIG
@@ -9,7 +9,7 @@ _._._._._._._._._._._._._._._._._._._._._.*/
 
 #include "task.h"
 
-struct_task_node TASK_GRAPH_A[29] = {
+struct_task_node TASK_GRAPH_A[30] = {
     {
         .id = 0, .children_count = 6,
         .dependencies_count = 0, .lock = NULL, .mtask = NULL,
@@ -155,8 +155,13 @@ struct_task_node TASK_GRAPH_A[29] = {
         .children =  (unsigned int []) { 28 }
     },
     {
-        .id = 28, .children_count = 0,
+        .id = 28, .children_count = 1,
         .dependencies_count = 3, .lock = NULL, .mtask = NULL,
+        .children =  (unsigned int []) { 29 }
+    },
+    {
+        .id = 29, .children_count = 0,
+        .dependencies_count = 1, .lock = NULL, .mtask = NULL,
         .children =  (unsigned int []) {}
     }
 };

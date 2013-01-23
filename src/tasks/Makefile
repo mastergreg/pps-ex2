@@ -2,8 +2,8 @@ TARGET = USE_CILKPLUS
 CC = gcc-cilkplus
 CCFLAGS += -std=c11
 #CCFLAGS += -Wuninitialized -Wunused `pkg-config --cflags glib-2.0` -fcilkplus
-CCFLAGS += `pkg-config --cflags glib-2.0` -fcilkplus -w
-LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  `pkg-config --libs glib-2.0`
+CCFLAGS += `pkg-config --cflags glib-2.0` -fcilkplus -w -lefence
+LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  `pkg-config --libs glib-2.0` -lefence
 OPT = 1
 
 ifndef DEBUG
