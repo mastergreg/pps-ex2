@@ -1,10 +1,10 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.h
 * Creation Date : 09-01-2013
-* Last Modified : Tue 22 Jan 2013 07:46:42 PM EET
+* Last Modified : Tue 22 Jan 2013 10:52:13 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
-#ifndef TASK_H 
+#ifndef TASK_H
 #define TASK_H
 
 #ifndef MAX_TASKS
@@ -12,6 +12,9 @@ _._._._._._._._._._._._._._._._._._._._._.*/
 #endif /* MAX_TASKS */
 
 #include <stdlib.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <glib.h>
 
 struct task {
     void *(*func)(void *, int);
@@ -20,22 +23,23 @@ struct task {
 };
 
 typedef struct task struct_task;
-void execute(struct_task *);
+void execute(struct_task *, int id);
 
 
 struct task_node {
     unsigned int id;
     unsigned int children_count;
-    unsigned int *children;
     //volatile gint lock;
+    gint dependencies_count;
     void  *lock;
-    unsigned int dependencies_count;
     struct_task *mtask;
+    unsigned int *children;
 };
 typedef struct task_node struct_task_node;
 
 
 struct_task * set_task(void *func, void *args);
+void execute_node(struct_task_node *TASK_GRAPH_A, int id);
 
 //void tasks_initialize(void);
 

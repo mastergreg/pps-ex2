@@ -1,39 +1,45 @@
-TARGET = USE_CILK
+TARGET = USE_CILKPLUS
 CC = gcc-cilkplus
-CCFLAGS += -Wall -Wextra -Wuninitialized -Wunused
-OPT = 3
+CCFLAGS += -std=c11
+#CCFLAGS += -Wuninitialized -Wunused `pkg-config --cflags glib-2.0` -fcilkplus
+CCFLAGS += `pkg-config --cflags glib-2.0` -fcilkplus -w
+LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  `pkg-config --libs glib-2.0`
+OPT = 1
 
 ifndef DEBUG
 	DEBUG = "y"
 endif
 
 ifeq ($(DEBUG),"y")
-	CCFLAGS += -D$(TARGET)_DEBUG=1 -D$(TARGET)
+	CCFLAGS += -Dmain_DEBUG=1 -D$(TARGET)
 	CCFLAGS += -g -O0 
 else
-	CCFLAGS += -Dset$(TARGET)_DEBUG=0 -D$(TARGET)
+	CCFLAGS += -Dmain_DEBUG=0 -D$(TARGET)
 	CCFLAGS += -O$(OPT)
 endif
 
 
-CCFILES += lu_tiled.cilk
-OBJ +=  $(patsubst %.cilk,%.o,$(CCFILES))
-EXECFILES +=  $(patsubst %.cilk,%.exec,$(CCFILES))
+CCFILES += lu_tiled.c
+OBJ +=  $(patsubst %.c,%.o,$(CCFILES))
+EXECFILES +=  $(patsubst %.c,%.exec,$(CCFILES))
 DEPENDS += $(wildcard *.h) 
 
 
 all: $(EXECFILES)
 
-%.exec:	%.o common.o
-	$(CC) $(CCFLAGS) $^ -o $@
+%.exec:	%.o common.o lu_tiled_wrappers.o task_config.h
+	@echo "[LD]" $@
+	@$(CC) $(LDFLAGS) $(CCFLAGS) $^ -o $@
 
-%.o:	%.cilk
-	$(CC) -c $(CCFLAGS) $< -o $@
+%.o:	%.c
+	@echo "[CC]" $<
+	@$(CC) -c $(LDFLAGS) $(CCFLAGS) $< -o $@
 
 
 .PHONY:	clean all indent tags
 clean:
-	rm -f $(OBJ) $(TARGET) $(EXECFILES)
+	@echo "Cleaning up"
+	@rm -f $(OBJ) $(TARGET) $(EXECFILES)
 indent:
 	astyle -A3 $(CCFILES)
 tags:

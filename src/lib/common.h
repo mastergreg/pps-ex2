@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
  * File Name : common.h
  * Creation Date : 06-11-2012
- * Last Modified : Mon 24 Dec 2012 03:47:05 AM EET
+ * Last Modified : Wed 23 Jan 2013 01:31:55 PM EET
  * Created By : Greg Liras <gregliras@gmail.com>
  * Created By : Alex Maurogiannis <nalfemp@gmail.com>
  _._._._._._._._._._._._._._._._._._._._._.*/
@@ -10,7 +10,7 @@
 #define DEBUG_FUNC
 
 #if main_DEBUG
-#define debug(fmt,arg...)     fprintf(stdout, "%s: " fmt, __func__ , ##arg)
+#define debug(fmt,arg...)     fprintf(stdout, "%s: " fmt, __func__ , ##arg); fflush(stdout)
 #else
 #define debug(fmt,arg...)     do { } while(0)
 #endif /* main_DEBUG */
@@ -66,9 +66,9 @@ void upper_triangularize(int N, double **Ap2D);
 #ifdef USE_MPI /* USE_MPI */
 #include <mpi.h>
 void propagate_with_send(void *buffer, int count , MPI_Datatype datatype, \
-        int root, MPI_Comm comm);
+                         int root, MPI_Comm comm);
 void propagate_with_flooding(void *buffer, int count , MPI_Datatype datatype, \
-        int root, MPI_Comm comm);
+                             int root, MPI_Comm comm);
 void gather_to_root_cyclic(double **Ap2D, int max_rank, int rank, int root, double **A2D, int N, int M);
 void get_counts(int max_rank, int N, int *counts);
 void get_displs(int *counts, int max_rank, int *displs);

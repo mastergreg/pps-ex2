@@ -35,7 +35,8 @@ all: $(EXECFILES)
 
 .PHONY:	clean all indent tags
 clean:
-	rm -f $(OBJ) $(TARGET) $(EXECFILES)
+	@echo "Cleaning up"
+	@rm -f $(OBJ) $(TARGET) $(EXECFILES)
 indent:
 	astyle -A3 $(CCFILES)
 tags:

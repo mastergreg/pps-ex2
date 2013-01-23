@@ -47,7 +47,7 @@ static double *parse_matrix_2d_cyclic(FILE *fp, unsigned int N, unsigned int M, 
 
     /* this loop reads any remaining data from the file */
     for(i = 1; i <= remainder; i++) {
-        p = A2D[i*workload] - M; 
+        p = A2D[i*workload] - M;
         if(fread(p, sizeof(double), M, fp) != M) {
             return NULL;
         }
@@ -55,7 +55,7 @@ static double *parse_matrix_2d_cyclic(FILE *fp, unsigned int N, unsigned int M, 
 
     /* this loop memsets the final line of the bottom parts */
     for(i = max_rank - remainder + 1; i < max_rank; i++) {
-        p = A2D[i*workload] - M; 
+        p = A2D[i*workload] - M;
         memset(p, 0, M*sizeof(double));
     }
 
@@ -67,12 +67,12 @@ static double *parse_matrix_2d_cyclic(FILE *fp, unsigned int N, unsigned int M, 
 static double *parse_matrix_2d(FILE *fp, int N, int M, double *A, int max_rank, OPMODE operation)
 {
     switch(operation) {
-        case CONTINUOUS:
-            return parse_matrix_2d_cyclic(fp, N, M, A, 1);
-        case CYCLIC:
-            return parse_matrix_2d_cyclic(fp, N, M, A, max_rank);
-        default:
-            return NULL;
+    case CONTINUOUS:
+        return parse_matrix_2d_cyclic(fp, N, M, A, 1);
+    case CYCLIC:
+        return parse_matrix_2d_cyclic(fp, N, M, A, max_rank);
+    default:
+        return NULL;
     }
 }
 
@@ -106,7 +106,7 @@ void fprint_matrix_2d(FILE *fp, int N, int M, double *A)
         fprintf(fp, "=");
     }
     fprintf(fp, "\n");
-} 
+}
 
 void print_matrix_2d_to_file(char *fname, int N, int M, double *A)
 {
@@ -170,8 +170,7 @@ double timer(void)
         seconds = tv.tv_sec + (((double) tv.tv_usec)/1e6);
         operation = 1;
         return 0;
-    }
-    else {
+    } else {
         operation = 0;
         return tv.tv_sec + (((double) tv.tv_usec)/1e6) - seconds;
     }
@@ -190,7 +189,7 @@ void usage(int argc, char **argv)
         printf("\n");
         exit(EXIT_FAILURE);
     }
-#else  
+#else
     if(argc != 3) {
         printf("Usage: %s <matrix file> <output file>\n", argv[0]);
         printf("Input was: ");
@@ -275,12 +274,12 @@ void * get_propagation(int argc, char **argv)
         if (argv[3][0] == '1') {
             return &MPI_Bcast;
         }
-    } 
+    }
     return &propagate_with_flooding;
 }
 
 void propagate_with_send(void *buffer, int count, MPI_Datatype datatype, \
-        int root, MPI_Comm comm)
+                         int root, MPI_Comm comm)
 {
     int rank;
     int i;
@@ -293,20 +292,18 @@ void propagate_with_send(void *buffer, int count, MPI_Datatype datatype, \
         for(i = 0; i < max_rank; i++) {
             if(i == rank) {
                 continue;
-            }
-            else {
+            } else {
                 debug("%d\n", i);
                 MPI_Send(buffer, count, datatype, i, root, comm);
             }
         }
-    }
-    else {
+    } else {
         MPI_Recv(buffer, count, datatype, root, root, comm, &status);
     }
 }
 
 void propagate_with_flooding(void *buffer, int count , MPI_Datatype datatype, \
-        int root, MPI_Comm comm)
+                             int root, MPI_Comm comm)
 {
     int rank;
     int max_rank;
@@ -339,7 +336,7 @@ void propagate_with_flooding(void *buffer, int count , MPI_Datatype datatype, \
 }
 
 /* Returns the displacements table in rows */
-void get_displs(int *counts, int max_rank, int *displs) 
+void get_displs(int *counts, int max_rank, int *displs)
 {
     int j;
     displs[0] = 0;
@@ -349,7 +346,7 @@ void get_displs(int *counts, int max_rank, int *displs)
 }
 
 /*  distributes the rows in a continuous fashion */
-void get_counts(int max_rank, int N, int *counts) 
+void get_counts(int max_rank, int N, int *counts)
 {
     int j, k;
     int rows = N;
@@ -361,12 +358,11 @@ void get_counts(int max_rank, int N, int *counts)
 
     /* Distribute the indivisible leftover */
     if (rows / max_rank != 0) {
-        j = rows % max_rank;    
+        j = rows % max_rank;
         for (k = 0; k < max_rank && j > 0; k++, j--) {
             counts[k] += 1;
         }
-    } 
-    else {
+    } else {
         for (k = 0; k < max_rank; k++) {
             counts[k] = 1;
         }
@@ -388,12 +384,10 @@ void gather_to_root_cyclic(double **Ap2D, int max_rank, int rank, int root, doub
         if(rank == bcaster) {
             if(bcaster == root) {
                 memcpy(A2D[i], Ap2D[current_row], M*sizeof(double));
-            }
-            else {
+            } else {
                 MPI_Send(Ap2D[current_row], M, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
             }
-        }
-        else if (rank == root) {
+        } else if (rank == root) {
             MPI_Recv(A2D[i], M, MPI_DOUBLE, bcaster, i, MPI_COMM_WORLD, &status);
         }
     }

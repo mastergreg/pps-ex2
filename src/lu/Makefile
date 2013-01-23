@@ -16,4 +16,5 @@ all: $(EXECFILES)
 	$(CC) $< -c $(CCFLAGS) -o $@
 
 clean:
-	rm -f $(OBJ) $(TARGET) $(EXECFILES)
+	@echo "Cleaning up"
+	@rm -f $(OBJ) $(TARGET) $(EXECFILES)

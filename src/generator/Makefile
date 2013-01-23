@@ -47,7 +47,8 @@ $(TARGET).exec: $(OBJ) $(DEPENDS)
 
 .PHONY:	clean all indent tags
 clean:
-	rm -f $(OBJ) $(TARGET)
+	@echo "Cleaning up"
+	@rm -f $(OBJ) $(TARGET) $(EXECFILES)
 indent:
 	astyle --style=linux $(CCFILES)
 tags:

@@ -36,7 +36,9 @@ tiledBlockSizes=(2 4 8 16 32 64)
 serialTiledPath=../lu/lu_tiled.exec
 serialRecPath=../lu/lu_rec.exec
 cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
-cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../cilkplus/lu_rec.exec )
+cilkTestFiles=()
+cilkplusTestFiles=(../cilkplus/lu_tiled.exec ../tasks/lu_tiled.exec ../cilkplus/lu_rec.exec )
+cilkplusTestFiles=(../tasks/lu_tiled.exec)
 
 
 slog="serial.log"
