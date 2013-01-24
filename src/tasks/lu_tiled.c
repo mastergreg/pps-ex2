@@ -12,6 +12,8 @@
 
 double ** up_res, ** low_res;
 
+double *** up_res_arr, *** low_res_arr;
+
 void execute(struct_task *t, int id)
 {
     //*(t->value) = (*t->func)(t->args, id);
@@ -125,7 +127,6 @@ void lu(double **a, int range, int B)
         lu_p->B = B;
         lu_p->u_inv = &(u_inv_arrs[k]);
         lu_p->l_inv = &(l_inv_arrs[k]);
-
         TASK_GRAPH_A[node_counter++].mtask = set_task(diag_node_wrapper, (void *) lu_p);
 
 
@@ -144,6 +145,8 @@ void lu(double **a, int range, int B)
             lu_node_p->u_inv = &(u_inv_arrs[k]);
             lu_node_p->l_inv = &(l_inv_arrs[k]);
             lu_node_p->i = i;
+            lu_node_p->up_res = &(up_res_arr[k]);
+            lu_node_p->low_res = &(low_res_arr[k]);
             TASK_GRAPH_A[node_counter++].mtask = set_task(upper_node_wrapper, (void *) lu_node_p);
             //mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
         }
@@ -155,6 +158,8 @@ void lu(double **a, int range, int B)
             lu_node_p->u_inv = &(u_inv_arrs[k]);
             lu_node_p->l_inv = &(l_inv_arrs[k]);
             lu_node_p->i = i;
+            lu_node_p->up_res = &(up_res_arr[k]);
+            lu_node_p->low_res = &(low_res_arr[k]);
             TASK_GRAPH_A[node_counter++].mtask = set_task(lower_node_wrapper, (void *) lu_node_p);
             //mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
         }
@@ -173,7 +178,7 @@ void lu(double **a, int range, int B)
             }
         }
     }
-    printf("%d\n", node_counter);
+    //printf("%d\n", node_counter);
 
     /***** Compute LU on final diagonal block *****/
     fnp = malloc(sizeof(struct final_node_params));
@@ -181,7 +186,7 @@ void lu(double **a, int range, int B)
     fnp->B = B;
     fnp->range = range;
 
-    printf("%d\n", node_counter);
+    //printf("%d\n", node_counter);
     TASK_GRAPH_A[node_counter++].mtask = set_task(final_node_wrapper, (void *) fnp);
     //lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
 
@@ -274,7 +279,7 @@ void print(double ** a, int N)
 }
 
 /***** Matrix multiplication of an upper triangular matrix with a full matrix *****/
-void mm_upper(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
+void mm_upper(double ** a1, int x_1, int y_1, double **up_res, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
 {
     int i,j,k;
     double sum=0;
@@ -291,7 +296,7 @@ void mm_upper(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, do
 }
 
 /***** Matrix multiplication of a lower triangular matrix with a full matrix *****/
-void mm_lower(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
+void mm_lower(double ** a1, int x_1, int y_1, double **low_res, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
 {
     int i,j,k;
     double sum=0;

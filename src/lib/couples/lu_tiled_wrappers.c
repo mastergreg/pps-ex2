@@ -29,7 +29,7 @@ void upper_node_wrapper(void *p, int id)
     int B = params->B;
     int i = params->i;
     debug("%d\n", id);
-    mm_upper(a, i*B, k*B, *(params->u_inv), 0, 0, a, i*B, k*B, B, B, B);
+    mm_upper(a, i*B, k*B, *(params->up_res), *(params->u_inv), 0, 0, a, i*B, k*B, B, B, B);
 }
 
 void lower_node_wrapper(void *p, int id)
@@ -40,7 +40,7 @@ void lower_node_wrapper(void *p, int id)
     int B = params->B;
     int i = params->i;
     debug("%d\n", id);
-    mm_lower(*(params->l_inv), 0, 0, a, k*B, i*B, a, k*B, i*B, B, B, B);
+    mm_lower(*(params->l_inv), 0, 0, *(params->low_res), a, k*B, i*B, a, k*B, i*B, B, B, B);
 }
 
 void update_node_wrapper(void *p, int id)

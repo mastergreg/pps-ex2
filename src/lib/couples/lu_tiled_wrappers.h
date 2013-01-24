@@ -18,6 +18,8 @@ struct LU_node_params {
     int B;
     int k;
     int i; // Node's index
+    double ***up_res;
+    double ***low_res;
 };
 
 struct updating_node_params {
