@@ -10,7 +10,7 @@
 #include "lu_tiled.h"
 #include "lu_tiled_wrappers.h"
 
-double ** up_res, ** low_res;
+//double ** up_res, ** low_res;
 
 double *** up_res_arr, *** low_res_arr;
 
@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     int N,B,num_blocks;
     struct timeval ts, tf;
     double time;
+    int i;
 
     Matrix *mat;
     //tiled_usage(argc, argv);
@@ -88,8 +89,12 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    low_res=allocate(B,(num_blocks-1)*B);
-    up_res=allocate((num_blocks-1)*B,B);
+    up_res_arr = malloc(num_blocks*sizeof(double **));
+    low_res_arr = malloc(num_blocks*sizeof(double **));
+    for(i = 0; i < num_blocks; i++) {
+        low_res_arr[i]=allocate(B,(num_blocks-1)*B);
+        up_res_arr[i]=allocate((num_blocks-1)*B,B);
+    }
 
     gettimeofday(&ts,NULL);
 
