@@ -88,12 +88,10 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    low_res=allocate(B,(num_blocks-1)*B);
-    up_res=allocate((num_blocks-1)*B,B);
-
     gettimeofday(&ts,NULL);
 
     lu(A,num_blocks,B);
+    printf("Graph Populated, Executing\n");
     execute_node(TASK_GRAPH_A, 0);
 
     gettimeofday(&tf,NULL);
@@ -108,19 +106,25 @@ int main(int argc, char *argv[])
 void lu(double **a, int range, int B)
 {
     int i,j,k;
-    //double ** l_inv, ** u_inv;
     double *** l_inv_arrs = malloc(sizeof(double **)*range);
     double *** u_inv_arrs = malloc(sizeof(double **)*range);
-
+    double *** up_res_arr = malloc(sizeof(double **)*(range-1));
+    double *** low_res_arr = malloc(sizeof(double **)*(range-1));
     struct diag_node_params *lu_p;
     struct LU_node_params *lu_node_p;
     struct updating_node_params *upd_node_p;
     struct final_node_params *fnp;
+
+    for (i=0;i<(range-1);i++) {
+        up_res_arr[i] = allocate(B, (range-1)*B);
+        low_res_arr[i] = allocate((range-1)*B,B);
+    }
+
+
     int node_counter = 0;
     for (k=0; k<range-1; k++) {
 
         /****Compute LU decomposition on upper left tile*****/
-
         lu_p = malloc(sizeof(struct diag_node_params));
         lu_p->a = &a;
         lu_p->k = k;
@@ -131,11 +135,7 @@ void lu(double **a, int range, int B)
 
 
         //lu_kernel(a,k*B,k*B,B,B);
-
         ///****Compute inverted L and U matrices of upper left tile*****/
-        //l_inv_arrs[k]=get_inv_l(a,k*B,k*B,B,B);
-        //u_inv_arrs[k]=get_inv_u(a,k*B,k*B,B,B);
-
         /*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
         for (i=k+1; i<range; i++) {
             lu_node_p = malloc(sizeof(struct LU_node_params));
@@ -189,7 +189,6 @@ void lu(double **a, int range, int B)
     //printf("%d\n", node_counter);
     TASK_GRAPH_A[node_counter++].mtask = set_task(final_node_wrapper, (void *) fnp);
     //lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
-
 }
 
 /***** Baseline LU Kernel *****/
@@ -203,7 +202,6 @@ void lu_kernel(double ** a, int xs,int ys, int X, int Y)
             for (j=k+1; j<Y; j++)
                 a[i+xs][j+ys]-=l*a[k+xs][j+ys];
         }
-
 }
 
 /***** Computes the inverted L^(-1) matrix of upper diagonal block using rectrtri_lower() *****/

@@ -10,8 +10,8 @@ _._._._._._._._._._._._._._._._._._._._._.*/
 
 
 void mm(double ** a1,int x_1,int y_1, double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, double ** tmp_res, int M, int N, int P, int sign);
-void mm_lower(double ** a1,int x_1,int y_1, double *low_res_minedouble ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
-void mm_upper(double ** a1,int x_1,int y_1, double *up_res_minedouble ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
+void mm_lower(double ** a1,int x_1,int y_1, double **low_res_mine,double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
+void mm_upper(double ** a1,int x_1,int y_1, double **up_res_mine,double ** a2, int x_2, int y_2 , double ** res, int x_3, int y_3, int M, int N, int P);
 void rectrtri_lower(double ** a, int x_s,int y_s, int N, int M, double ** tmp_res);
 void rectrtri_upper(double ** a, int x_s, int y_s, int N, int M, double ** tmp_res);
 double ** allocate(int X, int Y);
