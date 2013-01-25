@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
     gettimeofday(&ts,NULL);
 
     lu(A,num_blocks,B);
+    printf("Graph Populated, Executing\n");
     execute_node(TASK_GRAPH_A, 0);
 
     gettimeofday(&tf,NULL);
@@ -124,6 +125,13 @@ void lu(double **a, int range, int B)
     struct LU_node_params *lu_node_p;
     struct updating_node_params *upd_node_p;
     struct final_node_params *fnp;
+
+    for (i=0;i<(range-1);i++) {
+        up_res_arr[i] = allocate(B, (range-1)*B);
+        low_res_arr[i] = allocate((range-1)*B,B);
+    }
+
+
     int node_counter = 0;
     for (k=0; k<range-1; k++) {
 
@@ -131,11 +139,7 @@ void lu(double **a, int range, int B)
         lu_p = construct_diag_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]), B, k);
         TASK_GRAPH_A[node_counter++].mtask = set_task(diag_node_wrapper, (void *) lu_p);
         //lu_kernel(a,k*B,k*B,B,B);
-
         ///****Compute inverted L and U matrices of upper left tile*****/
-        //l_inv_arrs[k]=get_inv_l(a,k*B,k*B,B,B);
-        //u_inv_arrs[k]=get_inv_u(a,k*B,k*B,B,B);
-
         /*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
         for (i=k+1; i<range; i++) {
             lu_node_p = construct_LU_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
@@ -178,7 +182,6 @@ void lu_kernel(double ** a, int xs,int ys, int X, int Y)
             for (j=k+1; j<Y; j++)
                 a[i+xs][j+ys]-=l*a[k+xs][j+ys];
         }
-
 }
 
 /***** Computes the inverted L^(-1) matrix of upper diagonal block using rectrtri_lower() *****/

@@ -1,0 +1,490 @@
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 6
+lower_node_wrapper: 5
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+update_node_wrapper: 10
+diag_node_wrapper: 16
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 22
+update_node_wrapper: 23
+diag_node_wrapper: 25
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.073863	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+lower_node_wrapper: 4
+upper_node_wrapper: 3
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+diag_node_wrapper: 16
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 14
+update_node_wrapper: 15
+update_node_wrapper: 13
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+lower_node_wrapper: 19
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 23
+update_node_wrapper: 24
+update_node_wrapper: 22
+diag_node_wrapper: 25
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.078132	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+diag_node_wrapper: 16
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 22
+update_node_wrapper: 24
+diag_node_wrapper: 25
+update_node_wrapper: 23
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.072695	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+diag_node_wrapper: 16
+update_node_wrapper: 9
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 10
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+update_node_wrapper: 21
+update_node_wrapper: 23
+update_node_wrapper: 22
+update_node_wrapper: 24
+diag_node_wrapper: 25
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.069049	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 10
+diag_node_wrapper: 16
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 9
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+update_node_wrapper: 21
+update_node_wrapper: 22
+diag_node_wrapper: 25
+update_node_wrapper: 23
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.073423	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 10
+update_node_wrapper: 9
+update_node_wrapper: 11
+diag_node_wrapper: 16
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+update_node_wrapper: 21
+update_node_wrapper: 23
+update_node_wrapper: 22
+update_node_wrapper: 24
+diag_node_wrapper: 25
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.081745	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+diag_node_wrapper: 16
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 23
+update_node_wrapper: 22
+update_node_wrapper: 24
+diag_node_wrapper: 25
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.089538	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 10
+update_node_wrapper: 8
+diag_node_wrapper: 16
+update_node_wrapper: 9
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+update_node_wrapper: 21
+update_node_wrapper: 22
+update_node_wrapper: 24
+update_node_wrapper: 23
+diag_node_wrapper: 25
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.078187	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 5
+lower_node_wrapper: 4
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+update_node_wrapper: 10
+diag_node_wrapper: 16
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+update_node_wrapper: 21
+update_node_wrapper: 23
+update_node_wrapper: 22
+update_node_wrapper: 24
+diag_node_wrapper: 25
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.305732	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+lower_node_wrapper: 4
+upper_node_wrapper: 3
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+diag_node_wrapper: 16
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+lower_node_wrapper: 19
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 22
+update_node_wrapper: 23
+diag_node_wrapper: 25
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.072907	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+lower_node_wrapper: 4
+upper_node_wrapper: 3
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+diag_node_wrapper: 16
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+lower_node_wrapper: 19
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 22
+update_node_wrapper: 23
+diag_node_wrapper: 25
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.075606	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+update_node_wrapper: 10
+diag_node_wrapper: 16
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+update_node_wrapper: 21
+update_node_wrapper: 22
+update_node_wrapper: 23
+diag_node_wrapper: 25
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.070856	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+diag_node_wrapper: 16
+update_node_wrapper: 9
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 14
+update_node_wrapper: 15
+upper_node_wrapper: 17
+lower_node_wrapper: 19
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+update_node_wrapper: 21
+update_node_wrapper: 22
+diag_node_wrapper: 25
+update_node_wrapper: 23
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.108156	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
+make: Nothing to be done for `all'.
+29
+29
+diag_node_wrapper: 0
+upper_node_wrapper: 1
+upper_node_wrapper: 2
+upper_node_wrapper: 3
+lower_node_wrapper: 4
+lower_node_wrapper: 5
+lower_node_wrapper: 6
+update_node_wrapper: 7
+update_node_wrapper: 8
+update_node_wrapper: 9
+diag_node_wrapper: 16
+update_node_wrapper: 10
+update_node_wrapper: 11
+update_node_wrapper: 12
+update_node_wrapper: 13
+update_node_wrapper: 15
+update_node_wrapper: 14
+upper_node_wrapper: 17
+lower_node_wrapper: 20
+upper_node_wrapper: 18
+lower_node_wrapper: 19
+update_node_wrapper: 21
+update_node_wrapper: 22
+diag_node_wrapper: 25
+update_node_wrapper: 23
+update_node_wrapper: 24
+upper_node_wrapper: 26
+lower_node_wrapper: 27
+update_node_wrapper: 28
+final_node_wrapper: 29
+Tiled	64	0.073928	Block Size: 16
+[32m<test/mat_64.out> <test/real_mat_64.out> Pass :)[0m
