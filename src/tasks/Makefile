@@ -14,7 +14,7 @@ ifeq ($(DEBUG),"y")
 	CCFLAGS += -Dmain_DEBUG=1 -D$(TARGET)
 	CCFLAGS += -g -O0 
 else
-	CCFLAGS += -Dmain_DEBUG=0 -D$(TARGET)
+	CCFLAGS += -Dmain_DEBUG=0 -D$(TARGET) -w
 	CCFLAGS += -O$(OPT)
 endif
 

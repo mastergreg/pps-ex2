@@ -12,7 +12,6 @@
 
 //double ** up_res, ** low_res;
 
-double *** up_res_arr, *** low_res_arr;
 
 void execute(struct_task *t, int id)
 {
@@ -66,13 +65,10 @@ int min(int x, int y)
     return x<y?x:y;
 }
 
-/* TODO This is only for debugging */
-int B, num_blocks;
 int main(int argc, char *argv[])
 {
     double ** A;
-    /* TODO This is only for debugging */
-    //int N,B,num_blocks;
+    int B, num_blocks;
     int N;
     struct timeval ts, tf;
     double time;
@@ -94,13 +90,6 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    up_res_arr = malloc(num_blocks*sizeof(double **));
-    low_res_arr = malloc(num_blocks*sizeof(double **));
-    for(i = 0; i < num_blocks; i++) {
-        low_res_arr[i]=allocate(B,(num_blocks-1)*B);
-        up_res_arr[i]=allocate((num_blocks-1)*B,B);
-    }
-
     gettimeofday(&ts,NULL);
 
     lu(A,num_blocks,B);
@@ -118,9 +107,18 @@ int main(int argc, char *argv[])
 void lu(double **a, int range, int B)
 {
     int i,j,k;
+    double *** up_res_arr, *** low_res_arr;
+
+    up_res_arr = malloc(range*sizeof(double **));
+    low_res_arr = malloc(range*sizeof(double **));
+    for(i = 0; i < range; i++) {
+        low_res_arr[i]=allocate(B,(range-1)*B);
+        up_res_arr[i]=allocate((range-1)*B,B);
+    }
+
     //double ** l_inv, ** u_inv;
-    double *** l_inv_arrs = malloc(sizeof(double **)*range);
-    double *** u_inv_arrs = malloc(sizeof(double **)*range);
+    double *** l_inv_arrs = malloc(range*sizeof(double **));
+    double *** u_inv_arrs = malloc(range*sizeof(double **));
 
     struct diag_node_params *lu_p;
     struct LU_node_params *lu_node_p;
