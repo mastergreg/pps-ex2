@@ -5,7 +5,7 @@
 
 /* Constructors - destructors */
 
-struct diag_node_params * construct_diag_node_params(double ***a, \
+struct diag_node_params * construct_diag_node_params(double **a, \
         double ***u_inv, double ***l_inv, int B, int k)
 {
     struct diag_node_params *lu_p;
@@ -24,10 +24,8 @@ struct diag_node_params * destruct_diag_node_params(struct diag_node_params *lu_
 }
 
 struct LU_node_params * construct_LU_node_params (
-        double ***a, double *** u_inv, double *** l_inv, \
-        int B, int k, int i,        \ 
-        double ***up_res,           \
-        double ***low_res)
+        double **a, double *** u_inv, double *** l_inv, \
+        int B, int k, int i, double **up_res, double **low_res)
 {
     struct LU_node_params *lu_node_p;
     lu_node_p = malloc(sizeof(struct LU_node_params));
@@ -48,7 +46,7 @@ struct LU_node_params * destruct_LU_node_params (struct LU_node_params *lu_node_
 }
 
 struct updating_node_params * construct_updating_node_params(       \
-        double ***a, int B, int k, int i, int j)
+        double **a, int k, int B, int i, int j)
 {
     struct updating_node_params *upd_node_p;
     upd_node_p = malloc(sizeof(struct updating_node_params));
@@ -67,7 +65,7 @@ struct updating_node_params * destruct_updating_node_params(       \
 }
 
 struct final_node_params * construct_final_node_params(             \
-    double ***a, int B, int range)
+    double **a, int B, int range)
 {
     struct final_node_params *fnp;
     fnp = malloc(sizeof(struct final_node_params));
@@ -90,15 +88,12 @@ void diag_node_wrapper(void *p, int id)
 {
     struct diag_node_params *params = (struct diag_node_params *) p;
 
-    double ** a = *(params->a);
+    double ** a = params->a;
     int k = params->k;
     int B = params->B;
 
 
     debug("%d\n", id);
-
-
-
     lu_kernel(a, k*B, k*B, B, B);
     *(params->l_inv) = get_inv_l(a, k*B, k*B, B, B);
     *(params->u_inv) = get_inv_u(a, k*B, k*B, B, B);
@@ -107,29 +102,29 @@ void diag_node_wrapper(void *p, int id)
 void upper_node_wrapper(void *p, int id)
 {
     struct LU_node_params *params = (struct LU_node_params *) p;
-    double ** a = *(params->a);
+    double ** a = params->a;
     int k = params->k;
     int B = params->B;
     int i = params->i;
     debug("%d\n", id);
-    mm_upper(a, i*B, k*B, *(params->up_res), *(params->u_inv), 0, 0, a, i*B, k*B, B, B, B);
+    mm_upper(a, i*B, k*B, params->up_res, *(params->u_inv), 0, 0, a, i*B, k*B, B, B, B);
 }
 
 void lower_node_wrapper(void *p, int id)
 {
     struct LU_node_params *params = (struct LU_node_params *) p;
-    double ** a = *(params->a);
+    double ** a = params->a;
     int k = params->k;
     int B = params->B;
     int i = params->i;
     debug("%d\n", id);
-    mm_lower(*(params->l_inv), 0, 0, *(params->low_res), a, k*B, i*B, a, k*B, i*B, B, B, B);
+    mm_lower(*(params->l_inv), 0, 0, params->low_res, a, k*B, i*B, a, k*B, i*B, B, B, B);
 }
 
 void update_node_wrapper(void *p, int id)
 {
     struct updating_node_params *params = (struct updating_node_params *) p;
-    double ** a = *(params->a);
+    double ** a = params->a;
     int k = params->k;
     int B = params->B;
     int i = params->i;
@@ -141,7 +136,7 @@ void update_node_wrapper(void *p, int id)
 void final_node_wrapper(void *p, int id)
 {
     struct final_node_params *params = (struct final_node_params *) p;
-    double ** a = *(params->a);
+    double ** a = params->a;
     int B = params->B;
     int range = params->range;
     debug("%d\n", id);

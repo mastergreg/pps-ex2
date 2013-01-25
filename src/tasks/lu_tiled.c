@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     int i;
 
     Matrix *mat;
-    //tiled_usage(argc, argv);
+    tiled_usage(argc, argv);
 
     mat = get_matrix(argv[1], 0, CONTINUOUS);
     N = mat->N;
@@ -96,10 +96,10 @@ int main(int argc, char *argv[])
 
     up_res_arr = malloc(num_blocks*sizeof(double **));
     low_res_arr = malloc(num_blocks*sizeof(double **));
-    //for(i = 0; i < num_blocks; i++) {
-    //    low_res_arr[i]=allocate(B,(num_blocks-1)*B);
-    //    up_res_arr[i]=allocate((num_blocks-1)*B,B);
-    //}
+    for(i = 0; i < num_blocks; i++) {
+        low_res_arr[i]=allocate(B,(num_blocks-1)*B);
+        up_res_arr[i]=allocate((num_blocks-1)*B,B);
+    }
 
     gettimeofday(&ts,NULL);
 
@@ -130,7 +130,7 @@ void lu(double **a, int range, int B)
     for (k=0; k<range-1; k++) {
 
         /****Compute LU decomposition on upper left tile*****/
-        lu_p = construct_diag_node_params(&a, &(u_inv_arrs[k]), &(l_inv_arrs[k]), B, k);
+        lu_p = construct_diag_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]), B, k);
         TASK_GRAPH_A[node_counter++].mtask = set_task(diag_node_wrapper, (void *) lu_p);
         //lu_kernel(a,k*B,k*B,B,B);
 
@@ -140,14 +140,14 @@ void lu(double **a, int range, int B)
 
         /*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
         for (i=k+1; i<range; i++) {
-            lu_node_p = construct_LU_node_params(&a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
-                    B, k, i, &(up_res_arr[k]), &(low_res_arr[k]));
+            lu_node_p = construct_LU_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
+                    B, k, i, up_res_arr[k], low_res_arr[k]);
             TASK_GRAPH_A[node_counter++].mtask = set_task(upper_node_wrapper, (void *) lu_node_p);
             //mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
         }
         for (i=k+1; i<range; i++) {
-            lu_node_p = construct_LU_node_params(&a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
-                    B, k, i, &(up_res_arr[k]), &(low_res_arr[k]));
+            lu_node_p = construct_LU_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
+                    B, k, i, up_res_arr[k], low_res_arr[k]);
             TASK_GRAPH_A[node_counter++].mtask = set_task(lower_node_wrapper, (void *) lu_node_p);
             //mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
         }
@@ -155,7 +155,7 @@ void lu(double **a, int range, int B)
         /*****Update trailing blocks*****/
         for (i=k+1; i<range; i++) {
             for (j=k+1; j<range; j++) {
-                upd_node_p = construct_updating_node_params(&a, k, B, i, j);
+                upd_node_p = construct_updating_node_params(a, k, B, i, j);
                 TASK_GRAPH_A[node_counter++].mtask = set_task(update_node_wrapper, (void *) upd_node_p);
                 //mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
             }
@@ -167,7 +167,6 @@ void lu(double **a, int range, int B)
     fnp = construct_final_node_params(a, B, range);
     TASK_GRAPH_A[node_counter++].mtask = set_task(final_node_wrapper, (void *) fnp);
     //lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
-
 }
 
 /***** Baseline LU Kernel *****/
@@ -261,7 +260,6 @@ void mm_upper(double ** a1, int x_1, int y_1, double **up_res, double ** a2, int
 {
     int i,j,k;
     double sum=0;
-    up_res = allocate((num_blocks-1)*B,B);
     for (i=0; i<M; i++)
         for (j=0; j<P; j++) {
             for (k=0; k<=j; k++)
@@ -272,7 +270,6 @@ void mm_upper(double ** a1, int x_1, int y_1, double **up_res, double ** a2, int
     for (i=0; i<M; i++)
         for (j=0; j<P; j++)
             res[i+x_3][j+y_3]=up_res[i+x_3-M][j];
-    free(up_res);
 }
 
 /***** Matrix multiplication of a lower triangular matrix with a full matrix *****/
@@ -280,7 +277,6 @@ void mm_lower(double ** a1, int x_1, int y_1, double **low_res, double ** a2, in
 {
     int i,j,k;
     double sum=0;
-    low_res=allocate(B,(num_blocks-1)*B);
 
     for (i=0; i<M; i++)
         for (j=0; j<P; j++) {
@@ -292,8 +288,6 @@ void mm_lower(double ** a1, int x_1, int y_1, double **low_res, double ** a2, in
     for (i=0; i<M; i++)
         for (j=0; j<P; j++)
             res[i+x_3][j+y_3]=low_res[i][j+y_3-P];
-    free(low_res);
-
 }
 
 void mm_update(double ** a1, int x_1, int y_1, double ** a2, int x_2, int y_2, double ** res, int x_3, int y_3, int M, int N, int P)
