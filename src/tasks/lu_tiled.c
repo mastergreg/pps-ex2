@@ -126,12 +126,6 @@ void lu(double **a, int range, int B)
     struct updating_node_params *upd_node_p;
     struct final_node_params *fnp;
 
-    for (i=0;i<(range-1);i++) {
-        up_res_arr[i] = allocate(B, (range-1)*B);
-        low_res_arr[i] = allocate((range-1)*B,B);
-    }
-
-
     int node_counter = 0;
     for (k=0; k<range-1; k++) {
 
