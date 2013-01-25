@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : diff.py
 # Creation Date : 06-11-2012
-# Last Modified : Fri 25 Jan 2013 05:40:48 PM EET
+# Last Modified : Fri 25 Jan 2013 05:54:15 PM EET
 # Created By : Greg Liras <gregliras@gmail.com>
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
@@ -43,15 +43,15 @@ def main():
         d2 = parse(f2)
         f2.close()
 
-        err = 0
+        err = (0, 0, 0)
         diffed = diff(d1, d2)
         for i,vi in enumerate(diffed):
             for j,vj in enumerate(vi):
                 if vj > 1e-02:
-                    err = max(err, vj)
+                    err = max((err, (vj, i, j)))
                     #print(colored("<{0}> <{1}>: Failed with error value {2} on A[{3}][{4}]".format(argv[1], argv[2], vj, i, j), FAIL_COLOR))
                     #exit(1)
-        print(colored("<{0}> <{1}>: Failed with error value {2}".format(argv[1], argv[2], err,), FAIL_COLOR))
+        print(colored("<{0}> <{1}>: Failed with error value {2}".format(argv[1], argv[2], err), FAIL_COLOR))
         print(colored( "<{0}> <{1}> Pass :)".format(argv[1], argv[2]), PASS_COLOR ))
         exit(0)
 

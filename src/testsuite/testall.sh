@@ -30,9 +30,10 @@ fi
 #diffcmd=echo
 serialpath=../serial/main.exec
 #testFilesSizes=(64 128 1024 2048)
-testFilesSizes=(64 128 1024 2048)
+#testFilesSizes=(64 128 512 1024 2048)
+testFilesSizes=(512 1024)
 
-tiledBlockSizes=(2 4 8 16 32 64)
+tiledBlockSizes=(64 128 256)
 serialTiledPath=../lu/lu_tiled.exec
 serialRecPath=../lu/lu_rec.exec
 cilkTestFiles=(../cilk/lu_tiled.exec ../cilk/lu_rec.exec )
