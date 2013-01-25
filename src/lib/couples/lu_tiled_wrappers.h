@@ -50,7 +50,7 @@ struct LU_node_params * construct_LU_node_params (
 struct LU_node_params * destruct_LU_node_params (struct LU_node_params *lu_node_p);
 
 struct updating_node_params * construct_updating_node_params(       \
-        double **a, int B, int k, int i, int j);
+        double **a, int k, int B, int i, int j);
 struct updating_node_params * destruct_updating_node_params(       \
         struct updating_node_params *upd_node_p);
 
