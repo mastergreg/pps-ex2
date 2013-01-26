@@ -1,0 +1,106 @@
+\documentclass{beamer}
+
+%\usepackage{minted}
+\usepackage{xltxtra}
+\usepackage{xgreek}
+\usepackage{url}
+
+%\usetheme{Copenhagen}
+%\usetheme[roses]{boxes}
+\usetheme{Frankfurt}
+\usecolortheme{dolphin}
+
+
+%\setsansfont[Mapping=tex-text]{CMU Serif}
+\setsansfont[Mapping=tex-text]{DejaVu Sans}
+
+\author[afein,fedjo,mastergreg,mariaral]{Alex Maurogiannis, George Marinellis, Gregory Lyras, Maria Ralli}
+\institute{CSlab @ NTUA}
+\title{Cilk vs LU (tiled version)}
+\subtitle{Part III}
+
+\date{\today}
+
+
+\begin{document}
+\AtBeginSection[]
+{
+    \begin{frame}{Επισκόπηση}
+        \tableofcontents[currentsection]
+    \end{frame}
+}
+%--- the titlepage frame -------------------------%
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section{Περιγραφή Προσέγγισης}
+\subsection{Tiles and Tasks}
+\begin{frame}{tiles and tasks}
+    \begin{quote}
+        Στην tiled έκδοση σπάμε σε τμήματα τον αρχικό πίνακα μεγέθους block size
+        και σε αυτά εκτελούμε περισσότερες αλλά απλούστερες πράξεις.
+    \end{quote}
+
+    \begin{block}{Πράξεις ανά tile}
+        \begin{itemize}
+            \item<2-> LU kernel
+            \item<3-> Tile matrix inversion
+            \item<4-> matrix multiplication of row and column
+            \item<5-> matrix multiplication and update of the remaining matrix
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\subsection{Τελικές Εκδόσεις}
+\begin{frame}{Τελικές Εκδόσεις}
+    \begin{itemize}
+        \item<1-> tiled rec for
+            \begin{itemize}
+                \item<2-> MIT cilk
+                \item<3-> gcc cilk
+            \end{itemize}
+        \item<4-> tiled cilk\_for
+            \begin{itemize}
+                \item<5-> gcc cilk
+            \end{itemize}
+        \item<6-> task graph
+            \begin{itemize}
+                \item<7-> gcc cilk
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+
+\section{Παρουσίαση Αποτελεσμάτων}
+
+\subsection{Σύγκριση speedups}
+\subsubsection{clones}
+\begin{frame}
+    Speedups 1
+\end{frame}
+\subsubsection{sandman}
+
+\subsection{Σύγκριση χρόνων}
+\subsubsection{clones}
+\begin{frame}
+    Times 1
+\end{frame}
+\subsubsection{sandman}
+
+
+\section{Συμπεράσματα - Ερωτήσεις}
+
+\begin{frame}{Ερωτήσεις;;}
+    Ask! :)
+\end{frame}
+
+\begin{frame}[fragile]{Thanks}
+    \begin{itemize}
+        \item Thanks for watching
+        \item Thanks to foss-ntua for hosting
+    \end{itemize}
+\end{frame}
+
+\end{document}
