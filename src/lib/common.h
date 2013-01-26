@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
  * File Name : common.h
  * Creation Date : 06-11-2012
- * Last Modified : Wed 23 Jan 2013 01:31:55 PM EET
+ * Last Modified : Fri 25 Jan 2013 07:23:31 PM EET
  * Created By : Greg Liras <gregliras@gmail.com>
  * Created By : Alex Maurogiannis <nalfemp@gmail.com>
  _._._._._._._._._._._._._._._._._._._._._.*/
@@ -10,7 +10,7 @@
 #define DEBUG_FUNC
 
 #if main_DEBUG
-#define debug(fmt,arg...)     fprintf(stdout, "%s: " fmt, __func__ , ##arg); fflush(stdout)
+#define debug(fmt,arg...)     fprintf(stderr, "%s: " fmt, __func__ , ##arg); fflush(stdout)
 #else
 #define debug(fmt,arg...)     do { } while(0)
 #endif /* main_DEBUG */
