@@ -4,11 +4,11 @@ CCFLAGS += -std=c11
 #CCFLAGS += -Wuninitialized -Wunused `pkg-config --cflags glib-2.0` -fcilkplus
 CCFLAGS += `pkg-config --cflags glib-2.0` -fcilkplus -lefence
 LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  `pkg-config --libs glib-2.0` -lefence
-OPT = 1
+OPT = 0
 
-ifndef DEBUG
-	DEBUG = "y"
-endif
+#ifndef DEBUG
+#	DEBUG = "y"
+#endif
 
 ifeq ($(DEBUG),"y")
 	CCFLAGS += -Dmain_DEBUG=1 -D$(TARGET)
