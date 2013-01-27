@@ -10,12 +10,9 @@
 #include "lu_tiled.h"
 #include "lu_tiled_wrappers.h"
 
-//double ** up_res, ** low_res;
-
 
 void execute(struct_task *t, int id)
 {
-    //*(t->value) = (*t->func)(t->args, id);
     (*(t->func))(t->args, id);
 }
 
@@ -35,23 +32,20 @@ void execute_node(struct_task_node *TASK_GRAPH, int id)
 
     execute(tn->mtask, tn->id);
 
-    /* DEBUG */
+    /* DEBUG
     if (tn->dependencies_count!=0) {
         printf("  CONCURRENCY ISSUE: Node %d: dependencies count is %d after execute\n", tn->id, tn->dependencies_count);
     }
-    /* /DEBUG */
-
+    /DEBUG */
 
     for(i = 0; i < tn->children_count; ++i) {
         child = &(TASK_GRAPH[tn->children[i]]);
 
-
-        /* DEBUG */
+        /* DEBUG 
         if (child->dependencies_count < 1) {
             printf("  CONCURRENCY ISSUE Node %d: parent %d wants to decrease my dependencies_count from %d\n" ,child->id, tn->id, child->dependencies_count);
         }
-        /* /DEBUG */
-
+        /DEBUG */
 
         if(g_atomic_int_dec_and_test(&(child->dependencies_count))) {
             cilk_spawn execute_node(TASK_GRAPH, child->id);
@@ -72,7 +66,6 @@ int main(int argc, char *argv[])
     int N;
     struct timeval ts, tf;
     double time;
-    int i;
 
     Matrix *mat;
     tiled_usage(argc, argv);
@@ -81,7 +74,7 @@ int main(int argc, char *argv[])
     N = mat->N;
     A = appoint_2D(mat->A, N, N);
 
-    /* Since we have de facto 4 blocks, block size shouldnt be custom */
+    /* Since we have statically 4 blocks, block size arg is ignored */
     num_blocks = 4;
     B = N/num_blocks;
 
@@ -90,13 +83,13 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    gettimeofday(&ts,NULL);
-
     lu(A,num_blocks,B);
     printf("Graph Populated, Executing\n");
-    execute_node(TASK_GRAPH_A, 0);
 
+    gettimeofday(&ts,NULL);
+    execute_node(TASK_GRAPH_A, 0);
     gettimeofday(&tf,NULL);
+
     time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
     printf("Tiled\t%d\t%lf\tBlock Size: %d\n", N,time,B);
     upper_triangularize(N, A);
@@ -109,6 +102,10 @@ void lu(double **a, int range, int B)
 {
     int i,j,k;
     double *** up_res_arr, *** low_res_arr;
+    struct diag_node_params *lu_p;
+    struct LU_node_params *lu_node_p;
+    struct updating_node_params *upd_node_p;
+    struct final_node_params *fnp;
 
     up_res_arr = malloc(range*sizeof(double **));
     low_res_arr = malloc(range*sizeof(double **));
@@ -117,52 +114,41 @@ void lu(double **a, int range, int B)
         up_res_arr[i]=allocate((range-1)*B,B);
     }
 
-    //double ** l_inv, ** u_inv;
     double *** l_inv_arrs = malloc(range*sizeof(double **));
     double *** u_inv_arrs = malloc(range*sizeof(double **));
 
-    struct diag_node_params *lu_p;
-    struct LU_node_params *lu_node_p;
-    struct updating_node_params *upd_node_p;
-    struct final_node_params *fnp;
-
     int node_counter = 0;
+
     for (k=0; k<range-1; k++) {
 
-        /****Compute LU decomposition on upper left tile*****/
+        /* set diagonal nodes (lu_kernel and lu_inv calculation) */
         lu_p = construct_diag_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]), B, k);
         TASK_GRAPH_A[node_counter++].mtask = set_task(diag_node_wrapper, (void *) lu_p);
-        //lu_kernel(a,k*B,k*B,B,B);
-        ///****Compute inverted L and U matrices of upper left tile*****/
-        /*****Compute LU decomposition on upper horizontal frame and left vertical frame*****/
+
+        /* set upper and lower nodes (mm_upper and mm_lower)*/
         for (i=k+1; i<range; i++) {
             lu_node_p = construct_LU_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
                     B, k, i, up_res_arr[k], low_res_arr[k]);
             TASK_GRAPH_A[node_counter++].mtask = set_task(upper_node_wrapper, (void *) lu_node_p);
-            //mm_upper(a,i*B,k*B,u_inv,0,0,a,i*B,k*B,B,B,B);
         }
         for (i=k+1; i<range; i++) {
             lu_node_p = construct_LU_node_params(a, &(u_inv_arrs[k]), &(l_inv_arrs[k]),
                     B, k, i, up_res_arr[k], low_res_arr[k]);
             TASK_GRAPH_A[node_counter++].mtask = set_task(lower_node_wrapper, (void *) lu_node_p);
-            //mm_lower(l_inv,0,0,a,k*B,i*B,a,k*B,i*B,B,B,B);
         }
 
-        /*****Update trailing blocks*****/
+        /* set updating nodes (mm_update) */
         for (i=k+1; i<range; i++) {
             for (j=k+1; j<range; j++) {
                 upd_node_p = construct_updating_node_params(a, k, B, i, j);
                 TASK_GRAPH_A[node_counter++].mtask = set_task(update_node_wrapper, (void *) upd_node_p);
-                //mm_update(a,i*B,k*B,a,k*B,j*B,a,i*B,j*B,B,B,B);
             }
         }
     }
-    //printf("%d\n", node_counter);
 
-    /***** Compute LU on final diagonal block *****/
+    /* set final node (lu_kernel) */
     fnp = construct_final_node_params(a, B, range);
     TASK_GRAPH_A[node_counter++].mtask = set_task(final_node_wrapper, (void *) fnp);
-    //lu_kernel(a,(range-1)*B,(range-1)*B,B,B);
 }
 
 /***** Baseline LU Kernel *****/
@@ -213,7 +199,6 @@ double ** get_inv_u(double **a, int xs, int ys, int X, int Y)
     rectrtri_upper(u_inv,0,0,X,Y,tmp_res);
     free(tmp_res);
     return u_inv;
-
 }
 
 
@@ -225,29 +210,6 @@ double ** allocate(int X,int Y)
     for (i=0; i<X; i++)
         array[i]=(double*)calloc(Y,sizeof(double));
     return array;
-}
-
-void input(double ** a, int X, int Y)
-{
-    int i,j,t;
-    for (i=0; i<X; i++)
-        for (j=0; j<Y; j++) {
-            t = rand();
-            while (t == 0) {
-                t = rand();
-            }
-            a[i][j]=((double)t/1000000.0);
-        }
-}
-
-void print(double ** a, int N)
-{
-    int i,j;
-    for (i=0; i<N; i++) {
-        for (j=0; j<N; j++)
-            printf("%.6lf \n",a[i][j]);
-        printf("\n");
-    }
 }
 
 /***** Matrix multiplication of an upper triangular matrix with a full matrix *****/

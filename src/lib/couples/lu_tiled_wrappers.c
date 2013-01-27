@@ -97,6 +97,7 @@ void diag_node_wrapper(void *p, int id)
     lu_kernel(a, k*B, k*B, B, B);
     *(params->l_inv) = get_inv_l(a, k*B, k*B, B, B);
     *(params->u_inv) = get_inv_u(a, k*B, k*B, B, B);
+    debug("complete: 			%d\n", id);
 }
 
 void upper_node_wrapper(void *p, int id)
@@ -108,6 +109,7 @@ void upper_node_wrapper(void *p, int id)
     int i = params->i;
     debug("%d\n", id);
     mm_upper(a, i*B, k*B, params->up_res, *(params->u_inv), 0, 0, a, i*B, k*B, B, B, B);
+    debug("complete: 			%d\n", id);
 }
 
 void lower_node_wrapper(void *p, int id)
@@ -119,6 +121,7 @@ void lower_node_wrapper(void *p, int id)
     int i = params->i;
     debug("%d\n", id);
     mm_lower(*(params->l_inv), 0, 0, params->low_res, a, k*B, i*B, a, k*B, i*B, B, B, B);
+    debug("complete: 			%d\n", id);
 }
 
 void update_node_wrapper(void *p, int id)
@@ -131,6 +134,7 @@ void update_node_wrapper(void *p, int id)
     int j = params->j;
     debug("%d\n", id);
     mm_update(a, i*B, k*B, a, k*B, j*B, a, i*B, j*B, B, B, B);
+    debug("complete: 			%d\n", id);
 }
 
 void final_node_wrapper(void *p, int id)
@@ -141,4 +145,5 @@ void final_node_wrapper(void *p, int id)
     int range = params->range;
     debug("%d\n", id);
     lu_kernel(a, (range-1)*B, (range-1)*B, B, B);
+    debug("complete: 			%d\n", id);
 }

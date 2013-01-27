@@ -2,20 +2,22 @@ TARGET = USE_CILKPLUS
 CC = gcc-cilkplus
 CCFLAGS += -std=c11
 #CCFLAGS += -Wuninitialized -Wunused `pkg-config --cflags glib-2.0` -fcilkplus
-CCFLAGS += `pkg-config --cflags glib-2.0` -fcilkplus -lefence
-LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  `pkg-config --libs glib-2.0` -lefence
-OPT = 1
+CCFLAGS += `pkg-config --cflags glib-2.0` -fcilkplus 
+LDFLAGS += -Wl,-R/parlab/lib/ -lcilkrts  `pkg-config --libs glib-2.0` 
+OPT = 3
 
 ifndef DEBUG
 	DEBUG = "y"
 endif
 
 ifeq ($(DEBUG),"y")
-	CCFLAGS += -Dmain_DEBUG=1 -D$(TARGET)
-	CCFLAGS += -g -O0 
+	CCFLAGS += -Dmain_DEBUG=1 -D$(TARGET) 
+	CCFLAGS += -g -O0 -lefence
+	LDFLAGS += -lefence
 else
-	CCFLAGS += -Dmain_DEBUG=0 -D$(TARGET) -w
-	CCFLAGS += -O$(OPT)
+	CCFLAGS += -Dmain_DEBUG=0 -D$(TARGET) -w 
+	CCFLAGS += -O$(OPT) -g 
+	LDFLAGS += -lefence
 endif
 
 
