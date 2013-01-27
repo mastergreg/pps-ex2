@@ -1,10 +1,10 @@
 #!/bin/bash
 
 function plotot {
-    output=$1
-    machine=$2
-    in_t=$3
-    in_sp=$4
+    output=${2%res}png
+    machine=$1
+    in_t=$2
+    in_sp=$3
 gnuplot << EOF
     set terminal png size 1024, 768
     set output "${output}"
@@ -30,4 +30,5 @@ gnuplot << EOF
 EOF
 }
 
-plotot "sandman_tiled_cilk_for.png" "sandman" "sandman_tiled_cilk_for.res" "sandman_tiled_cilk_for_speedup.res"
+plotot "sandman" "sandman_tiled_cilk_for.res" "sandman_tiled_cilk_for_speedup.res"
+plotot "sandman" "sandman_tiled_cilkplus_rec_for_sweep.res" "sandman_tiled_cilkplus_rec_for_sweep_speedup.res"
