@@ -41,6 +41,7 @@
         Στην tiled έκδοση σπάμε σε τμήματα τον αρχικό πίνακα μεγέθους block size
         και σε αυτά εκτελούμε περισσότερες αλλά απλούστερες πράξεις.
     \end{quote}
+    \pause
 
     \begin{block}{Πράξεις ανά tile}
         \begin{itemize}
@@ -49,6 +50,13 @@
             \item<4-> matrix multiplication of row and column
             \item<5-> matrix multiplication and update of the remaining matrix
         \end{itemize}
+    \end{block}
+
+\end{frame}
+
+\begin{frame}{tiles and tasks}
+    \begin{block}{Παράδειγμα Εκτέλεσης}
+        \includegraphics[width=\textwidth]{files/pps-ex2-pres_tables.png}
     \end{block}
 \end{frame}
 
@@ -81,6 +89,12 @@
     Speedups 1
 \end{frame}
 \subsubsection{sandman}
+\begin{frame}{LU tiled version using cilk\_for}
+    \begin{block}{LU tiled version using cilk\_for}
+        \centering
+        \includegraphics[scale=0.25]{files/sandman_tiled_cilk_for.png}
+    \end{block}
+\end{frame}
 
 \subsection{Σύγκριση χρόνων}
 \subsubsection{clones}
