@@ -9,5 +9,8 @@ local
 *.out
 *.err
 *~
+*.nav
+*.vrb
+*.snm
 tmp
 tags
