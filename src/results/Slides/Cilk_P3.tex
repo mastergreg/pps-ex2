@@ -121,22 +121,22 @@
     \end{frame}
 
 \subsection{Σύγκριση χρόνων και speedups}
-\begin{frame}
-    \begin{block}{LU tiled με αναδρομικό for}
-        \begin{figure}[H]
-            \centering
-            \includegraphics[scale=0.23]{files/sandman_tiled_cilkplus_rec_for.png}
-            \caption{4096 Matrix Size, 32 block size}
-        \end{figure}
-    \end{block}
-\end{frame}
-
 
 \begin{frame}
     \begin{block}{LU tiled έκδοση με cilk\_for}
         \begin{figure}[H]
             \centering
             \includegraphics[scale=0.23]{files/sandman_tiled_cilk_for.png}
+            \caption{4096 Matrix Size, 32 block size}
+        \end{figure}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \begin{block}{LU tiled με αναδρομικό for}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[scale=0.23]{files/sandman_tiled_cilkplus_rec_for.png}
             \caption{4096 Matrix Size, 32 block size}
         \end{figure}
     \end{block}
