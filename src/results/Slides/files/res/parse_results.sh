@@ -4,7 +4,10 @@ function plotot {
     output=$1 
     machine=$2
     in_t=$3
-    in_sp=$4
+    in_t_mit=$4
+    in_t_plus=$5
+    in_sp_mit=$6
+    in_sp_plus=$7
 gnuplot << EOF
     set terminal png size 1024, 768
     set output "${output}"
@@ -15,20 +18,21 @@ gnuplot << EOF
     set style data histogram
     set style histogram cluster gap 1
     set style fill solid border -1
-    set yrange[0.0001:*]
+    set yrange[0:*]
     set multiplot layout 1,2
     set ylabel "Time"
     set title "Time"
-    set logscale y
-    plot "${in_t}" using 2:xtic(1) lt 3 title "Times"
-    unset logscale
+    plot "${in_t_mit}" using 2:xtic(1) lt 3 title "MIT-cilk", \
+      "${in_t_plus}" using 2:xtic(1) lt 4 title "gcc-cilkplus"
     unset ylabel
 
     set ylabel "Speedup"
     set title "Speedup"
     set yrange[0:*]
-    plot "${in_sp}" using 2:xtic(1) lt 4 notitle with points, \
-         "${in_sp}" using 2:xtic(1) lt 4 title "Speedup" with lines
+    plot "${in_sp_mit}" using 2:xtic(1) lt 3 notitle with points, \
+         "${in_sp_mit}" using 2:xtic(1) lt 3 title "MIT-cilk" with lines, \
+        "${in_sp_plus}" using 2:xtic(1) lt 4 notitle with points, \
+        "${in_sp_plus}" using 2:xtic(1) lt 4 title "gcc-cilkplus" with lines
     unset multiplot
     set key 
 EOF
@@ -44,7 +48,7 @@ EOF
 #plotot "sandman_tiled_cilkplus_rec_for.png" sandman sandman_tiled_serial_8k.res sandman_tiled_mit_rec_for_8k.res sandman_tiled_cilkplus_rec_for_8k.res sandman_tiled_mit_rec_for_speedup_8k.res sandman_tiled_cilkplus_rec_for_speedup_8k.res
 
 
-plotot "clones_graph_tiled_times.png" clones clones_graph_tiled_times.res clones_graph_tiled_speedups.res
+plotot "sandman_tiled_cilkplus_rec_for.png" sandman mpourda sandman_tiled_mit_rec_for_4k_sweep.res sandman_tiled_cilkplus_rec_for_4k_sweep.res sandman_tiled_mit_rec_for_4k_sweep_speedup.res sandman_tiled_cilkplus_rec_for_4k_sweep_speedup.res 
 
 
 
