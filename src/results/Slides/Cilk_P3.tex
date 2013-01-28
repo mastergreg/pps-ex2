@@ -45,14 +45,14 @@
     \pause
 
     \begin{block}{Πράξεις ανά tile}
-        \begin{itemize}
+        \begin{enumerate}
             \item<2-> LU kernel on the diagonal tile
             \item<3-> Tile matrix inversion
             \item<4-> matrix multiplication of row and column
             \item<5-> matrix multiplication and update of the remaining tiles
             \item<6-> LU kernel on the final tile
             
-        \end{itemize}
+        \end{enumerate}
     \end{block}
 
 \end{frame}
@@ -162,13 +162,73 @@
     \end{block}
 \end{frame}
 
-\section{Συμπεράσματα - Ερωτήσεις}
+\section{Σύνοψη}
 
+\subsection{Pitfalls to avoid}
+\begin{frame}{Pitfalls}
+    \begin{itemize}
+            \item<1-> Στην Tiled έκδοση της LU παρατηρήσαμε μεγάλες τιμές
+                σφαλμάτων που οφείλονται στο διαφορετικό τρόπο υπολογισμών
+                πάνω σε αριθμούς κινητής υποδιαστολής.
+            \item<2-> Το μέγεθος του block size έχει πολύ σημαντική επίδραση
+                στις τιμές των παραπάνω σφαλμάτων και οποιαδήποτε
+                βελτιστοποίηση καλό είναι να ελέγχεται ως προς την ακρίβειά
+                της.
+            \item<3-> Το μεγαλύτερο ποσοστό (άνω του 90\%) του χρόνου
+                εκτέλεσης της tiled έκδοσης καταναλώνεται στον πολλαπλασιασμό
+                και την ενημέρωση των tiles (βήμα 4) συνεπώς η παραλληλοποίηση
+                πρέπει να είναι στοχευμένη σε αυτό το βήμα.
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Συμπεράσματα}
+\begin{frame}{Συμπεράσματα}
+    \begin{itemize}
+            \item<1-> Το Block Size επιρρεάζει σημαντικά την επίδοση, πιο
+                συγκεκριμένα, έχουμε βέλτιστη εκτέλεση με BS 32 ενώ πάνω από
+                64 οι χρόνοι είναι απαγορευτικοί.
+            \item<2-> Το cilk\_for παρουσιάζει μέγιστο speedup σε σύγκριση με
+                τις υπόλοιπες tiled υλοποιήσεις.
+            \item<3-> Η χρήση rec\_for δίνει αντίστοιχο speedup με διπλάσιο
+                κόστος σε χρόνο.
+            \item<4-> Το Task Graph επιτρέπει τη μέγιστη δυνατή παραλληλία του
+                αλγορίθμου, ωστόσο ο στατικός γράφος εξαρτήσεων που
+                χρησιμοποιήσαμε χαρακτηρίζεται από μικρό fan out και κατά
+                συνέπεια από κακές επιδόσεις.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Τελική σύγκριση}
+    Εδώ μπαίνει το διάγραμμα με όλες τις εκδόσεις
+\end{frame}
+
+\begin{frame}
+    \begin{block}{Best of}
+    \begin{itemize}
+        \item<1-> Speedup:
+            \begin{enumerate}
+                \item<2-> First
+                \item<3-> Second
+                \item<4-> Third
+            \end{enumerate}
+        \item<5-> Time:
+            \begin{enumerate}
+                \item<6-> First
+                \item<7-> Second
+                \item<8-> Third
+            \end{enumerate}
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+
+\subsection{Ερωτήσεις}
 \begin{frame}{Ερωτήσεις;;}
     Ask! :)
 \end{frame}
 
-\begin{frame}[fragile]{Thanks}
+\begin{frame}{Thanks}
     \begin{itemize}
         \item Thanks for watching
     \end{itemize}
