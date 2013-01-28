@@ -1,0 +1,15 @@
+Cilk3 Size 4096  Block Size  32 Procs 1 Tiled   4096    28.775338       32 
+Cilk3 Size 4096  Block Size  32 Procs 2 Tiled   4096    14.542907       32 
+Cilk3 Size 4096  Block Size  32 Procs 4 Tiled   4096    7.358029        32 
+Cilk3 Size 4096  Block Size  32 Procs 6 Tiled   4096    5.057532        32 
+Cilk3 Size 4096  Block Size  32 Procs 8 Tiled   4096    3.814538        32 
+Cilk3 Size 4096  Block Size  32 Procs 12 Tiled   4096    2.695383        32 
+Cilk3 Size 4096  Block Size  32 Procs 14 Tiled   4096    2.355605        32 
+Cilk3 Size 4096  Block Size  32 Procs 16 Tiled   4096    2.150537        32 
+Cilk3 Size 4096  Block Size  32 Procs 18 Tiled   4096    1.914794        32 
+Cilk3 Size 4096  Block Size  32 Procs 20 Tiled   4096    1.792661        32 
+Cilk3 Size 4096  Block Size  32 Procs 26 Tiled   4096    1.560390        32
+Cilk3 Size 4096  Block Size  32 Procs 32 Tiled   4096    1.427333        32
+Cilk3 Size 4096  Block Size  32 Procs 40 Tiled   4096    1.444625        32
+Cilk3 Size 4096  Block Size  32 Procs 50 Tiled   4096    1.318098        32
+Cilk3 Size 4096  Block Size  32 Procs 64 Tiled   4096    1.346085        32
