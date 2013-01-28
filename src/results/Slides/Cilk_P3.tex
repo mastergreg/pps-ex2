@@ -93,7 +93,7 @@
         \begin{block}{Sandman Block Size Sweep}
             \begin{figure}[H]
                 \centering
-                \includegraphics[scale=0.25]{files/sandman_block_size_sweep_4k.png}
+                \includegraphics[scale=0.23]{files/sandman_block_size_sweep_4k.png}
                 \caption{4096 Matrix Size, 64 threads}
             \end{figure}
         \end{block}
@@ -103,29 +103,29 @@
         \begin{block}{Clones Block Size Sweep}
             \begin{figure}[H]
                 \centering
-                \includegraphics[scale=0.25]{files/clones_block_size_sweep_4k.png}
+                \includegraphics[scale=0.23]{files/clones_block_size_sweep_4k.png}
                 \caption{4096 Matrix Size, 8 threads}
             \end{figure}
         \end{block}
     \end{frame}
 
 \subsection{Σύγκριση χρόνων και speedups}
-\begin{frame}{LU tiled με αναδρομικό for}
+\begin{frame}
     \begin{block}{LU tiled με αναδρομικό for}
         \begin{figure}[H]
             \centering
-            \includegraphics[scale=0.25]{files/sandman_tiled_cilkplus_rec_for.png}
+            \includegraphics[scale=0.23]{files/sandman_tiled_cilkplus_rec_for.png}
             \caption{4096 Matrix Size, 32 block size}
         \end{figure}
     \end{block}
 \end{frame}
 
 
-\begin{frame}{LU tiled version using cilk\_for}
+\begin{frame}
     \begin{block}{LU tiled version using cilk\_for}
         \begin{figure}[H]
             \centering
-            \includegraphics[scale=0.25]{files/sandman_tiled_cilk_for.png}
+            \includegraphics[scale=0.23]{files/sandman_tiled_cilk_for.png}
             \caption{4096 Matrix Size, 32 block size}
         \end{figure}
     \end{block}
