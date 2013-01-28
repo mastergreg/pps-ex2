@@ -45,10 +45,12 @@
 
     \begin{block}{Πράξεις ανά tile}
         \begin{itemize}
-            \item<2-> LU kernel
+            \item<2-> LU kernel on the diagonal tile
             \item<3-> Tile matrix inversion
             \item<4-> matrix multiplication of row and column
-            \item<5-> matrix multiplication and update of the remaining matrix
+            \item<5-> matrix multiplication and update of the remaining tiles
+            \item<6-> LU kernel on the final tile
+            
         \end{itemize}
     \end{block}
 
@@ -62,42 +64,51 @@
 
 \subsection{Τελικές Εκδόσεις}
 \begin{frame}{Τελικές Εκδόσεις}
-    \begin{itemize}
-        \item<1-> tiled rec for
-            \begin{itemize}
-                \item<2-> MIT cilk
-                \item<3-> gcc cilk
-            \end{itemize}
-        \item<4-> tiled cilk\_for
-            \begin{itemize}
-                \item<5-> gcc cilk
-            \end{itemize}
-        \item<6-> task graph
-            \begin{itemize}
-                \item<7-> gcc cilk
-            \end{itemize}
-    \end{itemize}
+    \begin{block}{Εκδόσεις }
+        \begin{itemize}
+            \item<1-> Tiled με αναδρομικό for
+                \begin{itemize}
+                    \item<2-> MIT cilk
+                    \item<3-> gcc-cilkplus
+                \end{itemize}
+            \item<4-> Tiled με χρήση cilk\_for
+                \begin{itemize}
+                    \item<5-> gcc-cilkplus
+                \end{itemize}
+            \item<6-> Task Graph
+                \begin{itemize}
+                    \item<7-> gcc-cilkplus
+                \end{itemize}
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 
 
 \section{Παρουσίαση Αποτελεσμάτων}
 
-\subsection{Επιλογή Block Size)
+\subsection{Επιλογή Block Size}
     \begin{frame}
-        \begin{block}{Block size sweep sandman 4k}
-            \centering
-            \includegraphics[scale=0.25]{files/sandman_tiled_cilk_for.png}
+        \begin{block}{Sandman Block Size Sweep}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[scale=0.25]{files/sandman_block_size_sweep_4k.png}
+                \caption{4096 Matrix Size, 64 threads}
+            \end{figure}
         \end{block}
     \end{frame}
 
     \begin{frame}
-        \begin{block}{Block size sweep sandman 8k}
-            \centering
-            \includegraphics[scale=0.25]{files/sandman_tiled_cilk_for.png}
+        \begin{block}{Clones Block Size Sweep}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[scale=0.25]{files/clones_block_size_sweep_4k.png}
+                \caption{4096 Matrix Size, 8 threads}
+            \end{figure}
         \end{block}
     \end{frame}
-\subsection{Σύγκριση speedups}
+
+\subsection{Σύγκριση χρόνων και speedups}
 \subsubsection{clones}
 \begin{frame}
     Speedups 1
@@ -109,14 +120,6 @@
         \includegraphics[scale=0.25]{files/sandman_tiled_cilk_for.png}
     \end{block}
 \end{frame}
-
-\subsection{Σύγκριση χρόνων}
-\subsubsection{clones}
-\begin{frame}
-    Times 1
-\end{frame}
-\subsubsection{sandman}
-
 
 \section{Συμπεράσματα - Ερωτήσεις}
 
