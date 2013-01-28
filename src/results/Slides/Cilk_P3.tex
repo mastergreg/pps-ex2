@@ -130,11 +130,31 @@
 
 
 \begin{frame}
-    \begin{block}{LU tiled version using cilk\_for}
+    \begin{block}{LU tiled έκδοση με cilk\_for}
         \begin{figure}[H]
             \centering
             \includegraphics[scale=0.23]{files/sandman_tiled_cilk_for.png}
             \caption{4096 Matrix Size, 32 block size}
+        \end{figure}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \begin{block}{αναδρομική tiled σε cilkplus vs cilk\_for}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[scale=0.23]{files/sandman_tiled_for_comparison.png}
+            \caption{4096 Matrix Size, 32 block size}
+        \end{figure}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \begin{block}{Task Graph}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[scale=0.23]{files/clones_graph_tiled_times.png}
+            \caption{8 threads, $block size = Matrix size /4$}
         \end{figure}
     \end{block}
 \end{frame}
