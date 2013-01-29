@@ -1,7 +1,7 @@
 /* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 * File Name : task.h
 * Creation Date : 09-01-2013
-* Last Modified : Tue 22 Jan 2013 10:52:13 PM EET
+* Last Modified : Tue 29 Jan 2013 02:52:44 PM EET
 * Created By : Greg Liras <gregliras@gmail.com>
 _._._._._._._._._._._._._._._._._._._._._.*/
 #ifndef TASK_H
@@ -29,9 +29,7 @@ void execute(struct_task *, int id);
 struct task_node {
     unsigned int id;
     unsigned int children_count;
-    //volatile gint lock;
     gint dependencies_count;
-    void  *lock;
     struct_task *mtask;
     unsigned int *children;
 };

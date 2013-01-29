@@ -5,6 +5,7 @@
 \usepackage{xgreek}
 \usepackage{url}
 \usepackage{wasysym}
+\usepackage{minted}
 
 %\usetheme{Copenhagen}
 %\usetheme[roses]{boxes}
@@ -154,8 +155,17 @@
     \includegraphics[height=\textheight]{files/task_graph_full.png}
 \end{frame}
 
+\begin{frame}[fragile]{Δομές δεδομένων}
+        \begin{minipage}{0.5\textwidth}
+            \inputminted[fontsize=\scriptsize,firstline=19,lastline=23]{c}{files/task.h}
+        \end{minipage}
+       \begin{minipage}{0.4\textwidth}
+            \inputminted[fontsize=\scriptsize,firstline=29,lastline=35]{c}{files/task.h}
+        \end{minipage}
+\end{frame}
+
 \begin{frame}
-    \begin{block}{Task Graph}
+    \begin{block}{Αποτελέσματα}
         \begin{figure}[H]
             \centering
             \includegraphics[scale=0.23]{files/clones_graph_tiled_times.png}
