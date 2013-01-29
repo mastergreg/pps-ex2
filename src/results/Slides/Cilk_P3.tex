@@ -199,8 +199,14 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Τελική σύγκριση}
-    Εδώ μπαίνει το διάγραμμα με όλες τις εκδόσεις
+\begin{frame}
+    \begin{block}{Final Countdown}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[scale=0.23]{files/final_plot.png}
+            \caption{Thread sweep, Matrix size 4092}
+        \end{figure}
+    \end{block}
 \end{frame}
 
 \begin{frame}
@@ -208,15 +214,15 @@
     \begin{itemize}
         \item<1-> Speedup:
             \begin{enumerate}
-                \item<2-> First
-                \item<3-> Second
-                \item<4-> Third
+                \item<2-> tiled rec\_for (gcc-cilk) BS 32 (sandman 64 threads 23.15)
+                \item<3-> tiled cilk\_for (gcc-cilk) BS 32 (sandman 64 threads 21.3771)
+                \item<4-> recursive (gcc-cilk) BS 32 (sandman 64 threads 20.4)
             \end{enumerate}
         \item<5-> Time:
             \begin{enumerate}
-                \item<6-> First
-                \item<7-> Second
-                \item<8-> Third
+                \item<6-> tiled cilk\_for (gcc-cilk) BS 32 (sandman 64 threads 1.34 sec)
+                \item<7-> recursive (gcc-cilk) BS 32 (sandman 64 threads 1.44 sec)
+                \item<8-> tiled rec\_for (gcc-cilk) BS 32 (sandman 64 threads 2.62 sec)
             \end{enumerate}
     \end{itemize}
     \end{block}
