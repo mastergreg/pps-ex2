@@ -4,6 +4,7 @@
 \usepackage{xltxtra}
 \usepackage{xgreek}
 \usepackage{url}
+\usepackage{wasysym}
 
 %\usetheme{Copenhagen}
 %\usetheme[roses]{boxes}
@@ -63,35 +64,32 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{Γράφος εξαρτήσεων}
-    \includegraphics[height=\textheight]{files/task_graph_full.png}
-\end{frame}
 \subsection{Τελικές Εκδόσεις}
 \begin{frame}{Τελικές Εκδόσεις}
     \begin{block}{Εκδόσεις }
-        \begin{itemize}
-                
-            \item<1-> \begin{minipage}{0.7\textwidth}
+        \begin{minipage}{0.7\textwidth}
+            \begin{itemize}
+                \item<1->
                     Tiled με αναδρομικό for
-                \end{minipage}
-                \begin{minipage}[h]{0.1\textwidth}
-                \begin{flushright}
-                        \includegraphics[scale=0.45]{files/rec_for.png}
-                \end{flushright}
-                \end{minipage}
                     \begin{itemize}
                         \item<2-> MIT cilk
                         \item<3-> gcc-cilkplus
                     \end{itemize}
-            \item<4-> Tiled με χρήση cilk\_for
-                \begin{itemize}
-                    \item<5-> gcc-cilkplus
-                \end{itemize}
-            \item<6-> Task Graph
-                \begin{itemize}
-                    \item<7-> gcc-cilkplus
-                \end{itemize}
-        \end{itemize}
+                \item<4-> Tiled με χρήση cilk\_for
+                    \begin{itemize}
+                        \item<5-> gcc-cilkplus
+                    \end{itemize}
+                \item<6-> Task Graph
+                    \begin{itemize}
+                        \item<7-> gcc-cilkplus
+                    \end{itemize}
+            \end{itemize}
+        \end{minipage}
+        \begin{minipage}[H!]{0.1\textwidth}
+            \begin{flushright}
+                \includegraphics[scale=0.45]{files/rec_for.png}
+            \end{flushright}
+        \end{minipage}
     \end{block}
 \end{frame}
 
@@ -152,6 +150,10 @@
     \end{block}
 \end{frame}
 
+\begin{frame}{Γράφος εξαρτήσεων}
+    \includegraphics[height=\textheight]{files/task_graph_full.png}
+\end{frame}
+
 \begin{frame}
     \begin{block}{Task Graph}
         \begin{figure}[H]
@@ -210,7 +212,7 @@
 \end{frame}
 
 \begin{frame}
-    \begin{block}{Best of}
+    \begin{block}{Top 3}
     \begin{itemize}
         \item<1-> Speedup:
             \begin{enumerate}
@@ -228,6 +230,14 @@
     \end{block}
 \end{frame}
 
+\begin{frame}
+    \begin{block}{Best of}
+        Ξεκινήσαμε με σειριακούς χρόνους της τάξης των 30 sec με την προφανή
+        υλοποίηση και καταλήγουμε να ρίχνουμε το χρόνο στα 1.34sec με speedup
+        22 σε 64 threads (με hyperthreading)!! \smiley{}
+    \end{block}
+\end{frame}
+
 
 \subsection{Ερωτήσεις}
 \begin{frame}{Ερωτήσεις;;}
@@ -236,7 +246,7 @@
 
 \begin{frame}{Thanks}
     \begin{itemize}
-        \item Thanks for watching
+        \item Thanks for watching!
     \end{itemize}
 \end{frame}
 
